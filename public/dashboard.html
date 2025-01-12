@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">
+                    <img src="../images/home-icon.svg" alt="Home Icon">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="dashboard.html">
+                    <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="Team.html">
+                    <img src="../images/team.svg" alt="Team Icon">
+                    <span>Team</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.html">
+                    <img src="../images/login-icon.svg" alt="Login Icon">
+                    <span>Logout</span>
+                </a>
+            </li>
+    
+            <div class="user-profile">
+                <img src="../images/user-avatar.png" alt="User Avatar">
+                <div class="dropdown">
+                    <ul>
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Help</a></li>
+                    </ul>
+                </div>
+            </div>
+        </ul>
+        </div>
+        <main class="content">
+
+        
+        <section class="dashboard-section">
+            <form id="task-form">
+                <h2>Add a New Task</h2>
+                <input type="text" id="task-title" placeholder="Task Title" required>
+                <textarea id="task-details" placeholder="Task Details" required></textarea>
+                <select id="task-priority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            
+                <!-- Assignee Dropdown -->
+                <select id="assignee-select">
+                    <option value="John Doe">John Doe</option>
+                    <option value="Jane Smith">Jane Smith</option>
+                    <option value="Mike Johnson">Mike Johnson</option>
+                </select>
+            
+                <!-- File Upload Input -->
+                <input type="file" id="task-file">
+            
+                <button type="submit" class="btn">Add Task</button>
+            </form>
+            
+
+            <!-- Kanban Board -->
+            <div class="kanban-board">
+                <div class="kanban-column" data-status="idea" style="background-color: #f4f6fa;">
+                    <h2>Idea <span class="task-count">(0)</span></h2>
+                    <div class="kanban-cards" id="idea-column"></div>
+                </div>
+                <div class="kanban-column" data-status="to-do" style="background-color: #fef8e4;">
+                    <h2>To Do <span class="task-count">(0)</span></h2>
+                    <div class="kanban-cards" id="todo-column"></div>
+                </div>
+                <div class="kanban-column" data-status="in-progress" style="background-color: #eaf4fe;">
+                    <h2>In Progress <span class="task-count">(0)</span></h2>
+                    <div class="kanban-cards" id="in-progress-column"></div>
+                </div>
+                <div class="kanban-column" data-status="done" style="background-color: #e9f7e9;">
+                    <h2>Done <span class="task-count">(0)</span></h2>
+                    <div class="kanban-cards" id="done-column"></div>
+                </div>
+            </div>
+        </section>
+
+                   
+     <section class="dashboard-section">
+                <!-- version control-->
+    <div class="documents-section">
+        <ul id="documents-list"> 
+            <h2 id="version-control">Project Versions Overview</h2>
+            <section class="version-overview">
+                <div id="versions-overview-list">
+                  
+                </div>
+            </section>
+            <section class="upload-section">
+                <h1 id="upload-doc">Upload Your Documents</h1>
+                <p>Drag & Drop Files Here</p>
+                <div id="file-drop-area">
+                    <label for="file-upload" class="custom-upload-label">Upload Files</label>
+                    <input type="file" id="file-upload" class="file-input" accept=".pdf,.docx,.txt" multiple>
+                </div>
+                <button type="button" class="btn" id="analyze-btn">Analyze</button>
+                <div id="analysis-result" class="result">
+                    <h2>Analysis Result:</h2>
+                    <p id="result-output">Upload a document to see the analysis here.</p>
+                </div>
+                <button class="btn" id="download-report" disabled>Download Report</button>
+            </section>
+        </ul>
+    </div>
+
+    <!-- project manag -->
+
+    <div class="project-management">
+        <h2>Project Management</h2>
+        <div class="add-project">
+            <input type="text" id="project-name" placeholder="Project Name">
+            <input type="date" id="project-deadline">
+            <textarea id="project-description" placeholder="Project Description"></textarea>
+            <button id="add-project">Add Project</button>
+        </div>
+        <div class="project-filters">
+            <input type="text" id="search-project" placeholder="Search Projects">
+            <select id="filter-projects">
+                <option value="all">All</option>
+                <option value="completed">Completed</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="overdue">Overdue</option>
+            </select>
+        </div>
+        <div id="project-list" class="project-list"></div>
+        <div class="gantt-chart-section">
+            <h2>Project Timeline</h2>
+            <canvas id="gantt-chart"></canvas>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <script src="index.js"></script>
+    <script src="login.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

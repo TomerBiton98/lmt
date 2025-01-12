@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Members Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">
+                    <img src="../images/home-icon.svg" alt="Home Icon">
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="dashboard.html">
+                    <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Team.html">
+                    <img src="../images/team.svg" alt="Team Icon">
+                    <span>Team</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.html">
+                    <img src="../images/login-icon.svg" alt="Login Icon">
+                    <span>Logout</span>
+                </a>
+            </li>
+     
+
+        <div class="user-profile">
+            <img src="../images/user-avatar.png" alt="User Avatar">
+            <div class="dropdown">
+                <ul>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+            </div>
+        </div>
+    </ul>
+    </div>
+    
+    <main class="content">
+    <div class="container">
+        <h1>My Team</h1>
+
+        <!-- Form to Add New Members -->
+        <div class="form-section">
+            <input type="number" id="member-id" placeholder="Member ID">
+            <input type="text" id="member-name" placeholder="Name">
+            <input type="text" id="member-position" placeholder="Position">
+            <input type="text" id="member-project" placeholder="Project/Task">
+            <input type="file" id="member-photo" accept="image/*">
+            <input type="tel" id="member-phone" placeholder="Phone Number (e.g., +972XXXXXXX)">
+            <button onclick="addMember()">Add Member</button>
+        </div>
+
+        <!-- Filters for Grouping and Searching -->
+        <div class="filters">
+            <select id="filter-project" onchange="filterMembers()">
+                <option value="all">All Projects/Tasks</option>
+            </select>
+        </div>
+
+        <!-- Team Members Grid -->
+        <div class="team-grid" id="team-grid"></div>
+    </div>
+
+    <script>
+    src="index.js"
+    src="login.html"
+    src="script.js"
+        const teamMembers = JSON.parse(localStorage.getItem("teamMembers")) || [];
+        const projectFilter = document.getElementById("filter-project");
+
+        // Load Members on Page Load
+        window.onload = function () {
+            populateProjects();
+            displayMembers();
+        };
+
+        // Add Member
+        function addMember() {
+            const id = document.getElementById("member-id").value.trim();
+            const name = document.getElementById("member-name").value.trim();
+            const position = document.getElementById("member-position").value.trim();
+            const project = document.getElementById("member-project").value.trim();
+            const phone = document.getElementById("member-phone").value.trim();
+            const photoFile = document.getElementById("member-photo").files[0];
+
+            if (!id || !name || !position || !project || !phone || !photoFile) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const member = {
+                    id,
+                    name,
+                    position,
+                    project,
+                    phone,
+                    photo: e.target.result,
+                };
+                teamMembers.push(member);
+                saveMembersToLocalStorage();
+                if (!Array.from(projectFilter.options).some(option => option.value === project)) {
+                    const option = document.createElement("option");
+                    option.value = project;
+                    option.textContent = project;
+                    projectFilter.appendChild(option);
+                }
+                displayMembers();
+            };
+            reader.readAsDataURL(photoFile);
+        }
+
+        // Display Members
+        function displayMembers() {
+            const teamGrid = document.getElementById("team-grid");
+            teamGrid.innerHTML = "";
+
+            teamMembers.forEach((member) => {
+                teamGrid.innerHTML += `
+                    <div class="team-card">
+                        <img src="${member.photo}" alt="${member.name}">
+                        <h3>${member.name}</h3>
+                        <p>Position: ${member.position}</p>
+                        <p>Project/Task: ${member.project}</p>
+                        <button class="message-btn" onclick="sendMessage('${member.phone}', '${member.name}')">Message</button>
+                        <button class="delete-btn" onclick="deleteMember('${member.id}')">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Filter Members by Project/Task
+        function filterMembers() {
+            const selectedProject = projectFilter.value;
+            const filteredMembers = selectedProject === "all"
+                ? teamMembers
+                : teamMembers.filter((member) => member.project === selectedProject);
+            displayFilteredMembers(filteredMembers);
+        }
+
+        function displayFilteredMembers(members) {
+            const teamGrid = document.getElementById("team-grid");
+            teamGrid.innerHTML = "";
+
+            members.forEach((member) => {
+                teamGrid.innerHTML += `
+                    <div class="team-card">
+                        <img src="${member.photo}" alt="${member.name}">
+                        <h3>${member.name}</h3>
+                        <p>Position: ${member.position}</p>
+                        <p>Project/Task: ${member.project}</p>
+                        <button class="message-btn" onclick="sendMessage('${member.phone}', '${member.name}')">Message</button>
+                        <button class="delete-btn" onclick="deleteMember('${member.id}')">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Delete Member
+        function deleteMember(id) {
+            const index = teamMembers.findIndex((member) => member.id === id);
+            if (index !== -1) {
+                teamMembers.splice(index, 1);
+                saveMembersToLocalStorage();
+                displayMembers();
+            }
+        }
+
+        // Save Members to Local Storage
+        function saveMembersToLocalStorage() {
+            localStorage.setItem("teamMembers", JSON.stringify(teamMembers));
+        }
+
+        // Populate Projects in Filter
+        function populateProjects() {
+            const projects = [...new Set(teamMembers.map(member => member.project))];
+            projects.forEach(project => {
+                const option = document.createElement("option");
+                option.value = project;
+                option.textContent = project;
+                projectFilter.appendChild(option);
+            });
+        }
+
+        // Send Message via WhatsApp
+        function sendMessage(phone, name) {
+            const message = `Hi ${name}, I wanted to discuss something important.`;
+            const whatsappLink = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+            window.open(whatsappLink, "_blank");
+        }
+    </script>
+        <script src="index.js"></script>
+        <script src="login.js"></script>
+        <script src="script.js"></script>
+    </body>
+    </html>
+    

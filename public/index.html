@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">
+                    <img src="../images/home-icon.svg" alt="Home Icon">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="dashboard.html">
+                    <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="Team.html">
+                    <img src="../images/team.svg" alt="Team Icon">
+                    <span>Team</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.html">
+                    <img src="../images/login-icon.svg" alt="Login Icon">
+                    <span>Logout</span>
+                </a>
+            </li>
+     
+
+        <div class="user-profile">
+            <img src="../images/user-avatar.png" alt="User Avatar">
+            <div class="dropdown">
+                <ul>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+            </div>
+        </div>
+    </ul>
+    </div>
+    <main class="content">
+        
+    <main class="main">
+        <section class="dashboard-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h2>Tasks Completed</h2>
+                    <p id="tasks-completed">10</p>
+                </div>
+                <div class="stat-card">
+                    <h2>Versions count</h2>
+                    <p id="Version-count"></p>
+                </div>
+                <div class="stat-card">
+                    <h2>Reports Generated</h2>
+                    <p id="reports-generated">8</p>
+                </div>
+                
+
+
+<div id="file-bank" class="file-bank-section">
+    <h2>File Management</h2>
+    <div id="folder-view">
+        <button id="create-folder" class="btn">Create Folder</button>
+        <ul id="folder-list"></ul>
+    </div>
+    <div id="file-view" style="display: none;">
+        <button id="back-to-folders" class="btn">Back to Folders</button>
+        <div class="search-filter">
+            <input type="text" id="file-search" placeholder="Search files...">
+            <select id="file-type-filter">
+                <option value="all">All Types</option>
+                <option value="pdf">PDF</option>
+                <option value="doc">DOC</option>
+                <option value="image">Images</option>
+                <option value="video">Videos</option>
+            </select>
+            <input type="file" id="file-upload" style="display: none;">
+            <label for="file-upload" class="btn">Upload File</label>
+        </div>
+        <ul id="file-list"></ul>
+    </div>
+</div>
+
+
+<div class="stat-card-bigger version-control">
+    <h2>Version Control</h2>
+    <textarea id="version-notes" placeholder="Enter version notes..."></textarea>
+    <label for="version-file" class="custom-upload-label">Upload File</label>
+    <input type="file" id="version-file" accept=".pdf,.docx,.xlsx,.png,.jpg">
+    <button id="submit-version-btn">Submit Version</button>  
+    <select id="assignee-select"></select>
+
+     <div id="version-control-list">
+        <!-- Versions will be dynamically added here -->
+    </div>
+</div>
+
+
+
+                
+        </section>
+    </main>
+
+    <script src="login.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
