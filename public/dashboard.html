@@ -50,7 +50,7 @@
         <main class="content">
 
         
-        <section class="dashboard-section">
+        <!-- <section class="dashboard-section">
             <form id="task-form">
                 <h2>Add a New Task</h2>
                 <input type="text" id="task-title" placeholder="Task Title" required>
@@ -61,20 +61,20 @@
                     <option value="high">High</option>
                 </select>
             
-                <!-- Assignee Dropdown -->
+        
                 <select id="assignee-select">
                     <option value="John Doe">John Doe</option>
                     <option value="Jane Smith">Jane Smith</option>
                     <option value="Mike Johnson">Mike Johnson</option>
                 </select>
             
-                <!-- File Upload Input -->
                 <input type="file" id="task-file">
             
                 <button type="submit" class="btn">Add Task</button>
-            </form>
+            </form> -->
             
-
+          
+            
             <!-- Kanban Board -->
             <div class="kanban-board">
                 <div class="kanban-column" data-status="idea" style="background-color: #f4f6fa;">
@@ -84,6 +84,7 @@
                 <div class="kanban-column" data-status="to-do" style="background-color: #fef8e4;">
                     <h2>To Do <span class="task-count">(0)</span></h2>
                     <div class="kanban-cards" id="todo-column"></div>
+        
                 </div>
                 <div class="kanban-column" data-status="in-progress" style="background-color: #eaf4fe;">
                     <h2>In Progress <span class="task-count">(0)</span></h2>
@@ -96,7 +97,25 @@
             </div>
         </section>
 
-                   
+        <section class="gantt-chart-section">
+
+            <div class="charts-wrapper">
+                <h4>version submitted </h4>
+                <div class="chart-container">
+                    <canvas id="version-chart"></canvas>
+                </div>
+                <h4>Team Contrubtion</h4>
+                <div class="chart-container">
+                    <canvas id="team-chart"></canvas>
+                </div>
+            </div>
+            <h4>Project Timeline</h4>
+            <div class="chart-container">
+                <canvas id="gantt-chart"></canvas>
+            </div>
+        </section>
+
+        
      <section class="dashboard-section">
                 <!-- version control-->
     <div class="documents-section">
@@ -107,7 +126,7 @@
                   
                 </div>
             </section>
-            <section class="upload-section">
+            <!-- <section class="upload-section">
                 <h1 id="upload-doc">Upload Your Documents</h1>
                 <p>Drag & Drop Files Here</p>
                 <div id="file-drop-area">
@@ -120,14 +139,14 @@
                     <p id="result-output">Upload a document to see the analysis here.</p>
                 </div>
                 <button class="btn" id="download-report" disabled>Download Report</button>
-            </section>
+            </section> -->
         </ul>
     </div>
 
     <!-- project manag -->
 
     <div class="project-management">
-        <h2>Project Management</h2>
+        <h2>Document Versions Overview</h2>
         <div class="add-project">
             <input type="text" id="project-name" placeholder="Project Name">
             <input type="date" id="project-deadline">
@@ -144,12 +163,9 @@
             </select>
         </div>
         <div id="project-list" class="project-list"></div>
-        <div class="gantt-chart-section">
-            <h2>Project Timeline</h2>
-            <canvas id="gantt-chart"></canvas>
-        </div>
     </div>
-</section>
+
+
     </main>
 
     <script src="index.js"></script>

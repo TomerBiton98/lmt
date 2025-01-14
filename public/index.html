@@ -97,10 +97,11 @@
     <textarea id="version-notes" placeholder="Enter version notes..."></textarea>
     <label for="version-file" class="custom-upload-label">Upload File</label>
     <input type="file" id="version-file" accept=".pdf,.docx,.xlsx,.png,.jpg">
-    <button id="submit-version-btn">Submit Version</button>  
-    <select id="assignee-select"></select>
-
-     <div id="version-control-list">
+    <select id="assignee-select">
+        <option value="">Select Assignee</option>
+    </select>
+    <button id="submit-version-btn">Submit Version</button>
+    <div id="version-control-list">
         <!-- Versions will be dynamically added here -->
     </div>
 </div>
