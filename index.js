@@ -1,36 +1,59 @@
-const express = require('express');
-const path = require('path');
-const mysql = require('mysql');
-const session = require("express-session");
-const app = express();
-const PORT = 3000;
+// ==============================
+// MODULE IMPORTS AND CONFIGURATION
+// ==============================
+const express = require('express'); // Express framework for building web applications
+const path = require('path');       // Path module for file system paths
+const mysql = require('mysql');     // MySQL client for database connection
+const session = require("express-session"); // Session management middleware
 
-// Database connection setup
+const app = express();              // Initialize Express application
+const PORT = 3000;                  // Define the port number
+
+// ==============================
+// DATABASE CONNECTION SETUP
+// ==============================
 const dbConn = mysql.createConnection({
     host: "localhost",       // Database host
     port: "8889",            // Database port (default for MAMP)
     user: "root",            // Database username
     password: "root",        // Database password
-    database: 'myServer'     // Database name
+    database: 'myServer'      // Database name
 });
 
-// Middleware setup
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
-app.use(express.json()); // Parse JSON requests
+// Optional: Consider adding error handling for the database connection
+dbConn.connect((err) => {
+    if (err) {
+        console.error('Database connection failed:', err);
+    } else {
+        console.log('Connected to the database');
+    }
+});
+
+// ==============================
+// MIDDLEWARE SETUP
+// ==============================
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from the 'public' directory
+app.use(express.json()); // Parse incoming JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
+
+// Session management setup
 app.use(session({
     secret: "secret-key", // Key to sign the session ID cookie
-    resave: false,        // Avoid resaving session if unmodified
-    saveUninitialized: false, // Don't save uninitialized session
+    resave: false,        // Avoid resaving the session if it hasn't been modified
+    saveUninitialized: false, // Don't create sessions for unauthenticated users
     cookie: { maxAge: 24 * 60 * 60 * 1000 } // Session expiry: 1 day
 }));
 
-// Serve the homepage
+// ==============================
+// ROUTE: SERVE HOMEPAGE
+// ==============================
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve index.html
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve the main index.html file
 });
 
-// Login endpoint
+// ==============================
+// ROUTE: LOGIN ENDPOINT
+// ==============================
 app.post('/Login', (req, res) => {
     const { username, password } = req.body;
 
@@ -45,7 +68,8 @@ app.post('/Login', (req, res) => {
         if (result.length > 0) {
             const storedPassword = result[0].Password;
 
-            if (password === storedPassword) { // Match plaintext passwords
+            // Match plaintext passwords
+            if (password === storedPassword) {
                 req.session.isLoggedIn = true; // Mark session as logged in
                 req.session.user = {
                     id: result[0].id,
@@ -63,7 +87,9 @@ app.post('/Login', (req, res) => {
     });
 });
 
-// Endpoint to fetch logged-in user details
+// ==============================
+// ROUTE: FETCH LOGGED-IN USER DETAILS
+// ==============================
 app.get('/user', (req, res) => {
     if (req.session.isLoggedIn) {
         res.json({ name: req.session.user.name, username: req.session.user.username }); 
@@ -72,13 +98,9 @@ app.get('/user', (req, res) => {
     }
 });
 
-// Start the server
+// ==============================
+// START THE SERVER
+// ==============================
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-
-
-
-
