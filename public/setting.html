@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">
+                    <img src="../images/home-icon.svg" alt="Home Icon">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="dashboard.html">
+                    <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="Team.html">
+                    <img src="../images/team.svg" alt="Team Icon">
+                    <span>Team</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.html">
+                    <img src="../images/login-icon.svg" alt="Login Icon">
+                    <span>Logout</span>
+                </a>
+            </li>
+     
+
+        <div class="user-profile">
+            <img src="../images/user-avatar.png" alt="User Avatar">
+            <div class="dropdown">
+                <ul>
+                    <li><a href="setting.html">Settings</a></li>
+                    <li><a href="#">Help</a></li>
+                </ul>
+            </div>
+        </div>
+    </ul>
+    </div>
+    
+    <main class="content">
+        <section class="settings-section">
+            <h1>Settings</h1>
+            
+            <section class="profile-settings">
+                <h2>Profile Settings</h2>
+                <div class="profile-picture">
+                    <img id="profile-pic-preview" src="" alt="Profile Picture">
+                    <input type="file" id="profile-pic-upload" accept="image/*">
+                    <button id="save-profile-pic">Save Profile Picture</button>
+                </div>
+    
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter new username">
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Enter new email">
+    
+                <button id="save-profile">Save Changes</button>
+            </section>
+    
+            <!-- Appearance Settings -->
+            <section class="appearance-settings">
+                <h2>Appearance</h2>
+                <label for="theme-toggle">Dark Mode:</label>
+                <input type="checkbox" id="theme-toggle">
+            </section>
+    
+            <!-- Notifications -->
+            <section class="notification-settings">
+                <h2>Notifications</h2>
+                <label><input type="checkbox" id="email-notifications"> Email Notifications</label>
+                <label><input type="checkbox" id="push-notifications"> Push Notifications</label>
+            </section>
+    
+            <!-- Security Settings -->
+            <section class="security-settings">
+                <h2>Security</h2>
+                <label><input type="checkbox" id="2fa-toggle"> Enable Two-Factor Authentication</label>
+                <button id="manage-devices">Manage Devices</button>
+            </section>
+    
+            <!-- Account Management -->
+            <section class="account-settings">
+                <h2>Account</h2>
+                <button id="delete-account" class="danger">Delete Account</button>
+                <button id="logout">Logout</button>
+            </section>
+        </main>
+    
+        <script src="script.js"></script>
+</body>
+</html>

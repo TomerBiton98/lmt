@@ -167,6 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	const fileUpload = document.getElementById('file-upload');
 	const fileSearch = document.getElementById('file-search');
 	const fileTypeFilter = document.getElementById('file-type-filter');
+	const folderCountElement = document.getElementById('folder-count');
+
+	// Function to update folder count
+	const updateFolderCount = () => {
+		const uniqueFoldersCount = Object.keys(folders).length;
+		folderCountElement.textContent = uniqueFoldersCount;
+	};
 
 	let currentFolder = null;
 
@@ -194,6 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			folderItem.querySelector('.folder-details').addEventListener('click', () => openFolder(folderName));
 			folderList.appendChild(folderItem);
 		});
+		// Update folder count every time folders are rendered
+		updateFolderCount();
 	};
 
 	const deleteFolder = (folderName) => {
@@ -298,14 +307,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		} else {
 			alert('Folder already exists or invalid name.');
 		}
+		// Update folder count after creating a folder
+		updateFolderCount();
 	};
 
+	// Add event listeners
 	fileUpload.addEventListener('change', uploadFile);
 	createFolderBtn.addEventListener('click', createFolder);
 	backToFolders.addEventListener('click', backToFolderView);
 
+	// Initial rendering
 	renderFolders();
 });
+
 
 // ===============================
 // dashboard.html "Document Versions Overview" section
@@ -788,4 +802,127 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
 	document.head.appendChild(styleElement);
+});
+
+
+// ===============================
+// setting.html 
+// ===============================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved profile picture from localStorage
+    const savedProfilePic = localStorage.getItem('profilePic');
+    if (savedProfilePic) {
+        document.getElementById('profile-pic-preview').src = savedProfilePic;
+        updateProfilePicOnPages(savedProfilePic);
+    }
+
+    // Load theme preference
+    const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+    document.getElementById('theme-toggle').checked = isDarkMode;
+    document.body.classList.toggle('dark-mode', isDarkMode);
+
+    // Load username and email if saved
+    document.getElementById('username').value = localStorage.getItem('username') || '';
+    document.getElementById('email').value = localStorage.getItem('email') || '';
+
+    // Profile Picture Upload
+    document.getElementById('profile-pic-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById('profile-pic-preview').src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Save Profile Picture
+    document.getElementById('save-profile-pic').addEventListener('click', () => {
+        const profilePicSrc = document.getElementById('profile-pic-preview').src;
+        localStorage.setItem('profilePic', profilePicSrc);
+        updateProfilePicOnPages(profilePicSrc);
+        alert('Profile picture updated successfully!');
+    });
+
+    // Save Profile Information
+    document.getElementById('save-profile').addEventListener('click', () => {
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        localStorage.setItem('username', username);
+        localStorage.setItem('email', email);
+        alert('Profile updated successfully!');
+    });
+
+    // Dark Mode Toggle
+    document.getElementById('theme-toggle').addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+
+    // Logout
+    document.getElementById('logout').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    });
+
+    // Delete Account
+    document.getElementById('delete-account').addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete your account?')) {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    });
+
+    // Function to update profile picture on all pages
+    function updateProfilePicOnPages(newProfilePic) {
+        document.querySelectorAll('.user-profile img').forEach(img => {
+            img.src = newProfilePic;
+        });
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved profile picture from localStorage
+    const savedProfilePic = localStorage.getItem('profilePic');
+    if (savedProfilePic) {
+        document.querySelectorAll('.user-profile img').forEach(img => {
+            img.src = savedProfilePic;
+        });
+    }
+
+    // Profile Picture Upload
+    document.getElementById('profile-pic-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const newProfilePic = reader.result;
+                document.getElementById('profile-pic-preview').src = newProfilePic;
+
+                // Update profile picture across all pages
+                document.querySelectorAll('.user-profile img').forEach(img => {
+                    img.src = newProfilePic;
+                });
+
+                // Save to LocalStorage
+                localStorage.setItem('profilePic', newProfilePic);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Save Profile Picture
+    document.getElementById('save-profile-pic').addEventListener('click', () => {
+        const profilePicSrc = document.getElementById('profile-pic-preview').src;
+        localStorage.setItem('profilePic', profilePicSrc);
+        alert('Profile picture updated successfully!');
+    });
 });

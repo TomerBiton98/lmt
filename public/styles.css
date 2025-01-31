@@ -22,14 +22,15 @@
  16. Team Section
  17. Charts and Visualization
  18. Interactive Elements
- 19. Responsive Design
+ 19. setting.html
+ 20.responsive design
 ==================================*/
 
 /*==================================
  1. CSS Variables & Root Settings
 ==================================*/
 :root {
-  --primary-color: #a78bfa;
+  --primary-color: #fa8b8b;
   --secondary-color: #7c3aed;
   --background-gradient: linear-gradient( 145deg, rgba(167, 139, 250, 0.3), rgba(255, 255, 255, 0.3) );
   --blur-background: rgba(255, 255, 255, 0.15);
@@ -893,11 +894,13 @@
  /* ============================================
   13. User Profile Components
  ============================================ */
-  .user-profile {
+ .user-profile img {
+  width: 60px; /* Ensure the same size everywhere */
+  height: 60px; /* Maintain aspect ratio */
+  object-fit: cover; /* Crop to fit the container */
   display: flex;
   align-items: center;
   margin-top: 100px;
-  padding: 5px;
   gap: 1em
   }
  
@@ -906,7 +909,6 @@
   width: 60px;
   height: 60px
   }
- 
   .dropdown {
   padding: 8vh;
   display: none;
@@ -1074,9 +1076,51 @@
   transform: scale(1.05);
   transition: transform 0.2s ease, background-color 0.3s ease
  }
- 
+  /*==================================
+  19. setting.html Design
+ ==================================*/
+
+ .settings-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-settings, .appearance-settings, .notification-settings, .security-settings, .account-settings {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.profile-picture img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff;
+}
+
+
+
+button:hover {
+  opacity: 0.8;
+}
+
+.danger {
+  background: #dc3545;
+  color: white;
+}
+
+
+
+
+
  /*==================================
-  19. Responsive Design
+  20. Responsive Design
  ==================================*/
  @media (max-width: 1024px) {
   .charts-wrapper {
@@ -1168,3 +1212,62 @@
   justify-content: flex-start
   }
   }
+
+  @media (max-width: 768px) {
+    .project-management {
+      padding: 1em;
+      max-width: 90%;
+      margin: 0 auto;
+    }
+  
+    .project-management h1 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+  
+    .add-project,
+    .project-filters {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .add-project input,
+    .add-project textarea,
+    .project-filters input,
+    .project-filters select {
+      width: 100%;
+      font-size: 1rem;
+    }
+  
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .project-card {
+      width: 100%;
+      padding: 15px;
+    }
+  
+    .gantt-chart-section canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .project-management h1 {
+      font-size: 1.8rem;
+    }
+  
+    .add-project button {
+      width: 100%;
+      font-size: 1rem;
+    }
+  
+    .project-card h2 {
+      font-size: 1.2rem;
+    }
+  }
+  
