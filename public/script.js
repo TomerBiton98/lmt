@@ -808,7 +808,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================
 // setting.html 
 // ===============================
-
 document.addEventListener('DOMContentLoaded', () => {
     // Load saved profile picture from localStorage
     const savedProfilePic = localStorage.getItem('profilePic');
@@ -926,3 +925,99 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Profile picture updated successfully!');
     });
 });
+
+
+// ===============================
+// setting.html  dark mode
+// ===============================
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if dark mode is enabled in localStorage
+    const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('theme-toggle').checked = true;
+    }
+
+    // Dark Mode Toggle Event Listener
+    document.getElementById('theme-toggle').addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+});
+// ===============================
+// HELP PAGE - INTERACTIVE FEATURES
+// ===============================
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize Features
+    setupFAQToggle();
+    setupSearchFunctionality();
+    setupFormSubmission();
+});
+
+// ===============================
+// 1️⃣ SEARCH FUNCTIONALITY (REAL-TIME FILTER)
+// ===============================
+
+function setupSearchFunctionality() {
+    const searchInput = document.getElementById("search-help");
+    const faqItems = document.querySelectorAll(".faq");
+
+    if (searchInput) {
+        searchInput.addEventListener("keyup", function() {
+            let filter = searchInput.value.toLowerCase();
+            
+            faqItems.forEach(item => {
+                let question = item.querySelector(".faq-question").textContent.toLowerCase();
+                item.style.display = question.includes(filter) ? "block" : "none";
+            });
+        });
+    }
+}
+
+// ===============================
+// 2️⃣ FAQ SECTION - EXPANDABLE QUESTIONS
+// ===============================
+
+function setupFAQToggle() {
+    const faqItems = document.querySelectorAll(".faq");
+
+    faqItems.forEach(item => {
+        item.addEventListener("click", function() {
+            let answer = this.querySelector(".faq-answer");
+            let question = this.querySelector(".faq-question");
+
+            if (answer.style.display === "block") {
+                answer.style.display = "none";
+                question.innerHTML = question.innerHTML.replace("➖", "➕");
+            } else {
+                answer.style.display = "block";
+                question.innerHTML = question.innerHTML.replace("➕", "➖");
+            }
+        });
+    });
+}
+
+// ===============================
+// 3️⃣ HELP FORM - SUBMIT REQUEST
+// ===============================
+
+function setupFormSubmission() {
+    const helpForm = document.getElementById("help-form");
+
+    if (helpForm) {
+        helpForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            alert("Your help request has been submitted! Our support team will contact you soon.");
+            
+            // Clear form fields after submission
+            helpForm.reset();
+        });
+    }
+}

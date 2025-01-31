@@ -23,7 +23,9 @@
  17. Charts and Visualization
  18. Interactive Elements
  19. setting.html
- 20.responsive design
+ 20. help.html
+ 21.responsive design
+ 22. dark mode
 ==================================*/
 
 /*==================================
@@ -894,10 +896,7 @@
  /* ============================================
   13. User Profile Components
  ============================================ */
- .user-profile img {
-  width: 60px; /* Ensure the same size everywhere */
-  height: 60px; /* Maintain aspect ratio */
-  object-fit: cover; /* Crop to fit the container */
+ .user-profile {
   display: flex;
   align-items: center;
   margin-top: 100px;
@@ -1083,17 +1082,35 @@
  .settings-container {
   max-width: 600px;
   margin: auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease-in-out;
 }
+
 
 .profile-settings, .appearance-settings, .notification-settings, .security-settings, .account-settings {
   margin-bottom: 20px;
   padding: 20px;
   border-radius: 8px;
-  background: #f9f9f9;
+  backdrop-filter: blur(15px);
+  background: var(--blur-background);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 32px var(--shadow-color);
+  border-radius: var(--radius)
+}
+
+.profile-settings input {
+  flex: 1 1 calc(30% - 1rem);
+  margin: 0.5rem 0;
+  padding: 0.8rem;
+  border: 2px solid #ccc; /* Add a visible border */
+  color: rgb(0, 0, 0);
+  border-radius: 30px;
+  cursor: pointer;
 }
 
 .profile-picture img {
@@ -1103,8 +1120,21 @@
   object-fit: cover;
   border: 2px solid #007bff;
 }
-
-
+.settings-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in-out;
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
 
 button:hover {
   opacity: 0.8;
@@ -1114,13 +1144,206 @@ button:hover {
   background: #dc3545;
   color: white;
 }
+/* ==================================
+ 20.  Help & Support Page Styles
+================================== */
 
+.help-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px var(--shadow-color);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease-in-out;
+}
 
+.help-container h1, 
+.help-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--font-color);
+}
 
+/* ==================================
+ 20.1 FAQ Section
+================================== */
+.faq-section {
+  margin-bottom: 30px;
+}
 
+/* FAQ Accordion */
+.faq {
+  background: var(--blur-background);
+  padding: 15px;
+  border-radius: var(--radius);
+  box-shadow: 0 5px 15px var(--shadow-color);
+  margin-bottom: 10px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.faq:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.faq-answer {
+  display: none;
+  padding-top: 10px;
+}
+
+.faq.open .faq-answer {
+  display: block;
+}
+
+.faq-question {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+/* ==================================
+ 20.2 Search Bar for FAQ
+================================== */
+.search-bar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+.search-bar input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* ==================================
+ 20.3 Contact Section
+================================== */
+.contact-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.contact-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-section ul li {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.contact-section a {
+  color: var(--primary-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.contact-section a:hover {
+  text-decoration: underline;
+}
+
+/* ==================================
+ 20.4 Contact Form
+================================== */
+.contact-form {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--blur-background);
+  box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.contact-form label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+}
+
+.contact-form button {
+  margin-top: 15px;
+  padding: 12px;
+  background: var(--primary-color);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  transition: all 0.3s ease-in-out;
+}
+
+.contact-form button:hover {
+  background: var(--secondary-color);
+}
+
+/* ==================================
+ 20.5 Troubleshooting Section
+================================== */
+.troubleshooting-section {
+  text-align: center;
+}
+
+.troubleshooting-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.troubleshooting-section ul li {
+  margin-bottom: 8px;
+}
+
+.troubleshooting-section a {
+  color: var(--primary-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.troubleshooting-section a:hover {
+  text-decoration: underline;
+}
+
+/* ==================================
+ 20.6 Responsive Design
+================================== */
+@media (max-width: 768px) {
+  .help-container {
+    max-width: 90%;
+    padding: 20px;
+  }
+
+  .faq-question {
+    font-size: 1.1rem;
+  }
+
+  .contact-section ul li {
+    font-size: 1rem;
+  }
+}
 
  /*==================================
-  20. Responsive Design
+  21. Responsive Design
  ==================================*/
  @media (max-width: 1024px) {
   .charts-wrapper {
@@ -1271,3 +1494,142 @@ button:hover {
     }
   }
   
+/* ==================================
+22. DARK MODE STYLES
+================================== */
+body.dark-mode .gantt-chart-section{
+  background-color:rgba(201, 201, 201);
+}
+body.dark-mode {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+text{
+  color: white;
+}
+
+body.dark-mode .help-container{
+  background-color: #767676;
+}
+
+
+/* Settings Container Dark Mode */
+body.dark-mode .settings-container {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Section Styling in Dark Mode */
+body.dark-mode .profile-settings,
+body.dark-mode .appearance-settings,
+body.dark-mode .notification-settings,
+body.dark-mode .security-settings,
+body.dark-mode .account-settings {
+  background: rgba(40, 40, 40, 0.8);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Inputs, Selects, and Textareas in Dark Mode */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background: #333;
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* Buttons in Dark Mode */
+body.dark-mode .settings-container button {
+  background: #444;
+  color: white;
+}
+
+body.dark-mode .settings-container button:hover {
+  background: #555;
+}
+
+body.dark-mode .danger {
+  background: linear-gradient(45deg, #ff6b6b, #dc3545);
+}
+
+/* Sidebar in Dark Mode */
+body.dark-mode .sidebar {
+  background:rgba(255, 255, 255, 0.2);
+  box-shadow: 2px 0 5px rgba(255, 255, 255, 0.1);
+  
+}
+
+/* Profile Picture Border */
+body.dark-mode .profile-picture img {
+  border-color: #ff6b6b;
+}
+
+/* Dark Mode for Modals */
+body.dark-mode .modal-content {
+  background-color: #2a2a2a;
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark Mode for Cards */
+body.dark-mode .card,
+body.dark-mode .stat-card,
+body.dark-mode .file-bank-section {
+  background: rgba(116, 116, 116, 0.8);
+  color: white;
+}
+
+/* Dark Mode Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #000000;
+}
+
+input:checked + .slider::before {
+  transform: translateX(20px);
+}
+

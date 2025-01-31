@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <body>
+        <div class="sidebar">
+            <ul>
+                <li>
+                    <a href="index.html">
+                        <img src="../images/home-icon.svg" alt="Home Icon">
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="dashboard.html">
+                        <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Team.html">
+                        <img src="../images/team.svg" alt="Team Icon">
+                        <span>Team</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="login.html">
+                        <img src="../images/login-icon.svg" alt="Login Icon">
+                        <span>Logout</span>
+                    </a>
+                </li>
+         
+    
+            <div class="user-profile">
+                <img src="../images/user-avatar.png" alt="User Avatar">
+                <div class="dropdown">
+                    <ul>
+                        <li><a  href="setting.html">Settings</a></li>
+                        <li><a href="help.html">Help</a></li>
+                    </ul>
+                </div>
+            </div>
+        </ul>
+        </div>
+
+
+    <!-- Main Content -->
+    <main class="help-container">
+        <h1>Help & Support</h1>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="search-help" placeholder="🔍 Search for help topics..." onkeyup="searchFAQs()">
+        </div>
+        
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I change my profile picture? ➕</h3>
+                <p class="faq-answer">Go to the <a href="setting.html">Settings Page</a>, upload a new picture, and click "Save".</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I enable Dark Mode? ➕</h3>
+                <p class="faq-answer">Visit the <a href="setting.html">Settings Page</a>, and toggle the "Dark Mode" switch.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I contact support? ➕</h3>
+                <p class="faq-answer">You can email us at <strong>support@example.com</strong> or call <strong>+1 (555) 123-4567</strong>.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I reset my password? ➕</h3>
+                <p class="faq-answer">Click "Forgot Password" on the <a href="login.html">Login Page</a>, and follow the instructions.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I add new team members? ➕</h3>
+                <p class="faq-answer">Navigate to the <a href="Team.html">Team Page</a>, click "Add Member," enter their details, and assign their roles.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I upload and manage files? ➕</h3>
+                <p class="faq-answer">Go to the <a href="dashboard.html">Dashboard</a>, select the "File Management" section, and upload files by dragging them into the designated area.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How can I track project progress? ➕</h3>
+                <p class="faq-answer">Check the <a href="dashboard.html">Dashboard</a> for an overview of ongoing tasks, project milestones, and real-time status updates.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I manage tasks efficiently? ➕</h3>
+                <p class="faq-answer">Use the <a href="dashboard.html">Task Management</a> section to create tasks, assign them to team members, set deadlines, and track progress.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I recover deleted files? ➕</h3>
+                <p class="faq-answer">Deleted files are temporarily stored in the "Trash" folder for 30 days. You can restore them from the <a href="dashboard.html">File Management</a> section.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How do I enable email notifications for updates? ➕</h3>
+                <p class="faq-answer">Go to <a href="setting.html">Settings</a>, navigate to "Notifications," and enable email alerts for task assignments, file uploads, and system updates.</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 How does version control work in file management? ➕</h3>
+                <p class="faq-answer">The system automatically saves different versions of files. You can access previous versions in the <a href="dashboard.html">File Management</a> section under "Version Control."</p>
+            </div>
+        
+            <div class="faq" onclick="toggleFAQ(this)">
+                <h3 class="faq-question">🔹 Why is my dashboard loading slowly? ➕</h3>
+                <p class="faq-answer">Check your internet connection, clear your browser cache, and ensure your browser is updated. If issues persist, contact support.</p>
+            </div>
+        
+        </section>
+        
+
+        <!-- Contact Section -->
+        <section class="contact-section">
+            <h2>Contact Us</h2>
+            <p>For further assistance, reach out to our support team.</p>
+            <ul>
+                <li>Email: <a href="mailto:support@example.com">support@example.com</a></li>
+                <li>Phone: <strong>+1 (555) 123-4567</strong></li>
+                <li>Live Chat: Available Mon-Fri (9 AM - 6 PM)</li>
+            </ul>
+        </section>
+
+        <!-- Contact Form -->
+        <section class="contact-form">
+            <h2>Submit a Help Request</h2>
+            <form id="help-form">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" placeholder="Enter your name" required>
+        
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+        
+                <label for="message">Message:</label>
+                <textarea id="message" rows="4" placeholder="Describe your issue..." required></textarea>
+        
+                <button type="submit">Submit Request</button>
+            </form>
+        </section>
+
+        <!-- Troubleshooting Section -->
+        <section class="troubleshooting-section">
+            <h2>Guides & Troubleshooting</h2>
+            <p>Here are some quick guides to help you:</p>
+            <ul>
+                <li><a href="#">🔧 Fix Login Issues</a></li>
+                <li><a href="#">🔍 Improve Search Accuracy</a></li>
+                <li><a href="#">📂 Organize Your Files</a></li>
+                <li><a href="#">🛠️ System Requirements</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -8,55 +8,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <div class="sidebar">
-        <ul>
-            <li>
-                <a href="index.html">
-                    <img src="../images/home-icon.svg" alt="Home Icon">
-                    <span>Home</span>
-                </a>
-            </li>
-            <li>
-                <a href="dashboard.html">
-                    <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="Team.html">
-                    <img src="../images/team.svg" alt="Team Icon">
-                    <span>Team</span>
-                </a>
-            </li>
-            <li>
-                <a href="login.html">
-                    <img src="../images/login-icon.svg" alt="Login Icon">
-                    <span>Logout</span>
-                </a>
-            </li>
-     
-
-        <div class="user-profile">
-            <img src="../images/user-avatar.png" alt="User Avatar">
-            <div class="dropdown">
-                <ul>
-                    <li><a href="setting.html">Settings</a></li>
-                    <li><a href="#">Help</a></li>
-                </ul>
+    <body>
+        <div class="sidebar">
+            <ul>
+                <li>
+                    <a href="index.html">
+                        <img src="../images/home-icon.svg" alt="Home Icon">
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="dashboard.html">
+                        <img src="../images/dashboard-icon.svg" alt="Dashboard Icon">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Team.html">
+                        <img src="../images/team.svg" alt="Team Icon">
+                        <span>Team</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="login.html">
+                        <img src="../images/login-icon.svg" alt="Login Icon">
+                        <span>Logout</span>
+                    </a>
+                </li>
+         
+    
+            <div class="user-profile">
+                <img src="../images/user-avatar.png" alt="User Avatar">
+                <div class="dropdown">
+                    <ul>
+                        <li><a  href="setting.html">Settings</a></li>
+                        <li><a href="help.html">Help</a></li>
+                    </ul>
+                </div>
             </div>
+        </ul>
         </div>
-    </ul>
-    </div>
     
     <main class="content">
-        <section class="settings-section">
-            <h1>Settings</h1>
-            
+        <section class="settings-container">
             <section class="profile-settings">
                 <h2>Profile Settings</h2>
                 <div class="profile-picture">
                     <img id="profile-pic-preview" src="" alt="Profile Picture">
-                    <input type="file" id="profile-pic-upload" accept="image/*">
+                    <input  type="file" id="profile-pic-upload" accept="image/*">
                     <button id="save-profile-pic">Save Profile Picture</button>
                 </div>
     
@@ -68,13 +67,18 @@
     
                 <button id="save-profile">Save Changes</button>
             </section>
-    
-            <!-- Appearance Settings -->
             <section class="appearance-settings">
                 <h2>Appearance</h2>
-                <label for="theme-toggle">Dark Mode:</label>
-                <input type="checkbox" id="theme-toggle">
+                <div class="toggle-switch">
+                    <span>Dark Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </section>
+            
+  
     
             <!-- Notifications -->
             <section class="notification-settings">
