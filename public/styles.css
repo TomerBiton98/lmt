@@ -338,7 +338,7 @@
   background: rgba(255, 255, 255, 0.4);
   border-radius: var(--border-radius, 10px);
   box-shadow: var(--shadow, 0 4px 10px rgba(0, 0, 0, 0.1));
-  max-width: 600px;
+  max-width: 80vh;
   text-align: center;
   float: none;
   width: 100%;
@@ -370,7 +370,74 @@
   border-radius: var(--border-radius, 10px);
   box-shadow: var(--shadow)
  }
- 
+/* Styling for the Report Buttons */
+#download-storage-report, 
+#download-versions-report,
+#download-team-report,
+#download-phonebook-report {
+    background-color: rgba(169, 169, 169, 0.474);
+    width: 50vh;
+    max-width: 90%; /* Ensures responsiveness on smaller screens */
+    padding: 12px;
+    margin: 10px 0; /* Ensures vertical spacing */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#download-storage-report:hover, 
+#download-versions-report:hover,
+#download-team-report:hover,
+#download-phonebook-report:hover {
+    background-color: rgba(50, 50, 50, 0.9);
+}
+
+/* Ensuring buttons are stacked properly */
+.report-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers buttons horizontally */
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .report-section {
+        padding: 15px;
+    }
+
+    #download-storage-report, 
+    #download-versions-report,
+    #download-team-report,
+    #download-phonebook-report {
+        width: 80%; /* Adjusts button width for tablets */
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .report-section {
+        padding: 10px;
+    }
+
+    #download-storage-report, 
+    #download-versions-report,
+    #download-team-report,
+    #download-phonebook-report {
+        width: 95%; /* Ensures full width for mobile */
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+
  /*==================================
   8. Project Management
  ==================================*/
@@ -379,7 +446,7 @@
   background: rgba(255, 255, 255, 0.4);
   border-radius: var(--border-radius, 10px);
   box-shadow: var(--shadow, 0 4px 10px rgba(0, 0, 0, 0.1));
-  max-width: 1000px;
+  max-width: 80vh;
   text-align: center;
   margin: 0 auto;
   width: 100%;
@@ -1067,6 +1134,12 @@
   width: 100% !important;
   height: auto !important
   }
+  .report-section {
+     flex: 1;
+  min-width: 300px;
+  max-width: 550px;
+}
+  
  
  /* ============================================
   18. Interactive Elements

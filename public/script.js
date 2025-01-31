@@ -14,6 +14,131 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (typeof handleSidebarHover === "function") handleSidebarHover();
 });
 
+
+
+// ===============================
+// reports dashboard.html
+// ===============================
+// ===============================
+// Report Generation Functions
+// ===============================
+
+// 💾 Storage Usage Report
+function generateStorageReport() {
+    console.log("Generating Storage Report...");
+    const folders = JSON.parse(localStorage.getItem('folders')) || {};
+    let csvContent = "File Type,Number of Files,Total Size (MB)\n";
+
+    const fileTypeCount = {};
+    const fileTypeSize = {};
+
+    Object.values(folders).forEach(files => {
+        files.forEach(file => {
+            const fileType = file.type.toUpperCase();
+            const fileSizeMB = parseFloat(file.size.replace(' MB', ''));
+
+            if (!fileTypeCount[fileType]) {
+                fileTypeCount[fileType] = 0;
+                fileTypeSize[fileType] = 0;
+            }
+            fileTypeCount[fileType]++;
+            fileTypeSize[fileType] += fileSizeMB;
+        });
+    });
+
+    Object.keys(fileTypeCount).forEach(type => {
+        csvContent += `${type},${fileTypeCount[type]},${fileTypeSize[type].toFixed(2)}\n`;
+    });
+
+    downloadCSV(csvContent, "storage_usage_report.csv");
+}
+
+// 📄 Versions Uploaded Report
+function generateVersionsReport() {
+    console.log("Generating Versions Report...");
+    const versions = JSON.parse(localStorage.getItem('versions')) || {};
+    let csvContent = "Version ID,Notes,Assignee,Upload Date\n";
+
+    Object.values(versions).forEach(version => {
+        csvContent += `${version.id},"${version.notes}",${version.assignee},${version.date}\n`;
+    });
+
+    downloadCSV(csvContent, "versions_uploaded_report.csv");
+}
+
+// 👥 Team Contribution Report
+function generateTeamReport() {
+    console.log("Generating Team Report...");
+    const versions = JSON.parse(localStorage.getItem('versions')) || {};
+    let csvContent = "Team Member,Total Versions Uploaded\n";
+
+    const teamContributions = {};
+
+    Object.values(versions).forEach(version => {
+        if (!teamContributions[version.assignee]) {
+            teamContributions[version.assignee] = 0;
+        }
+        teamContributions[version.assignee]++;
+    });
+
+    Object.keys(teamContributions).forEach(member => {
+        csvContent += `${member},${teamContributions[member]}\n`;
+    });
+
+    downloadCSV(csvContent, "team_contribution_report.csv");
+}
+
+// 📞 Phone Book Report
+function generatePhonebookReport() {
+    console.log("Generating Phonebook Report...");
+    const teamMembers = JSON.parse(localStorage.getItem("teamMembers")) || [];
+    let csvContent = "Name,Position,Phone Number\n";
+
+    teamMembers.forEach(member => {
+        csvContent += `"${member.name}","${member.position}","${member.phone}"\n`;
+    });
+
+    downloadCSV(csvContent, "team_phonebook_report.csv");
+}
+
+// ===============================
+// Attach Event Listeners on Page Load
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Initializing Report Download Buttons...");
+
+    const reportButtons = [
+        { id: "download-storage-report", action: generateStorageReport },
+        { id: "download-versions-report", action: generateVersionsReport },
+        { id: "download-team-report", action: generateTeamReport },
+        { id: "download-phonebook-report", action: generatePhonebookReport }
+    ];
+
+    reportButtons.forEach(button => {
+        const element = document.getElementById(button.id);
+        if (element) {
+            element.addEventListener("click", button.action);
+        } else {
+            console.warn(`Button with ID ${button.id} not found.`);
+        }
+    });
+});
+
+// ===============================
+// CSV Download Utility Function
+// ===============================
+function downloadCSV(csvContent, filename) {
+    console.log(`Downloading ${filename}...`);
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
 // ===============================
 // CHART VISUALIZATION dashboard.html
 // ===============================
@@ -21,41 +146,6 @@ function initializeCharts() {
     // Load document versions from localStorage
     const versions = JSON.parse(localStorage.getItem('versions')) || {};
     const folders = JSON.parse(localStorage.getItem('folders')) || {};
-
-    // Extract data for the bar chart (document submissions per month)
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const monthlySubmissions = Array(12).fill(0);
-
-    Object.values(versions).forEach(version => {
-        const monthIndex = new Date(version.date).getMonth();
-        monthlySubmissions[monthIndex]++;
-    });
-
-    // Bar Chart for Document Versions
-    const versionCtx = document.getElementById('version-chart')?.getContext('2d');
-    if (versionCtx) {
-        new Chart(versionCtx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Document Submission',
-                    data: monthlySubmissions,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-            },
-        });
-    }
 
     // Doughnut Chart for Team Contributions (by number of versions uploaded)
     const teamCtx = document.getElementById('team-chart')?.getContext('2d');
@@ -95,40 +185,89 @@ function initializeCharts() {
             },
         });
     }
+// File Type & Size Chart (Replaces Gantt Chart)
+const fileChartCanvas = document.getElementById('gantt-chart');
 
-    // Gantt Chart for Project Timeline
-    const ganttCtx = document.getElementById('gantt-chart')?.getContext('2d');
-    if (ganttCtx) {
-        // Simulated project progress based on number of versions uploaded
-        const totalVersions = Object.keys(versions).length;
-        const progressData = [
-            Math.min(totalVersions * 2, 20),
-            Math.min(totalVersions * 3, 50),
-            Math.min(totalVersions * 5, 80),
-            Math.min(totalVersions * 8, 100)
-        ];
+if (fileChartCanvas) {
+    const fileChartCtx = fileChartCanvas.getContext('2d');
+    const folders = JSON.parse(localStorage.getItem('folders')) || {};
 
-        new Chart(ganttCtx, {
-            type: 'line',
-            data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                datasets: [{
-                    label: 'Project Progress',
-                    data: progressData,
-                    borderColor: '#36a2eb',
-                    fill: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-            },
+    // Count files by type and calculate total size
+    const fileTypeCount = {};
+    const fileTypeSize = {};
+    let totalSize = 0; // ✅ Track total file storage size
+
+    Object.values(folders).forEach(files => {
+        files.forEach(file => {
+            const fileType = file.type.toUpperCase();
+            const fileSizeMB = parseFloat(file.size.replace(' MB', '')); // Convert size to number
+
+            if (!fileTypeCount[fileType]) {
+                fileTypeCount[fileType] = 0;
+                fileTypeSize[fileType] = 0;
+            }
+            fileTypeCount[fileType]++;
+            fileTypeSize[fileType] += fileSizeMB;
+            totalSize += fileSizeMB; // ✅ Sum total size
         });
+    });
+
+    // ✅ Ensure previous total size text is removed before adding a new one
+    let totalSizeDisplay = document.getElementById("total-size-display");
+    if (!totalSizeDisplay) {
+        totalSizeDisplay = document.createElement('h3');
+        totalSizeDisplay.id = "total-size-display";
+        totalSizeDisplay.style.textAlign = "center";
+        totalSizeDisplay.style.marginTop = "10px";
+        totalSizeDisplay.style.fontSize = "16px"; // ✅ Adjust text size
+        fileChartCanvas.parentNode.appendChild(totalSizeDisplay); // ✅ Place directly under the chart
     }
+
+    // ✅ Update total size text
+    totalSizeDisplay.innerHTML = `💾 <strong>Total Storage Used:</strong> ${totalSize.toFixed(2)} MB`;
+
+    // ✅ Create and display the chart
+    new Chart(fileChartCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(fileTypeCount),
+            datasets: [
+                {
+                    label: 'Number of Files',
+                    data: Object.values(fileTypeCount),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Size (MB)',
+                    data: Object.values(fileTypeSize),
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'File Count / Size (MB)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            }
+        }
+    });
+}
+
 }
 
 // Ensure the function runs on page load
@@ -290,8 +429,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			folders[currentFolder].splice(index, 1);
 			saveToLocalStorage();
 			renderFiles(folders[currentFolder]);
+	
+			// Dispatch event to update storage display
+			document.dispatchEvent(new Event("fileDeleteSuccess"));
 		}
 	};
+	
 
 	const shareFile = (file) => {
 		const fileData = encodeURIComponent(JSON.stringify(file));
@@ -306,15 +449,18 @@ document.addEventListener('DOMContentLoaded', () => {
 			const newFile = {
 				name: file.name,
 				type: fileType,
-				size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+				size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`, // Convert bytes to MB
 				uploaded: new Date().toISOString().split('T')[0],
 			};
 			folders[currentFolder].push(newFile);
 			saveToLocalStorage();
 			renderFiles(folders[currentFolder]);
+	
+			// Dispatch event to update storage display
+			document.dispatchEvent(new Event("fileUploadSuccess"));
 		}
 	};
-
+	
 	const createFolder = () => {
 		const folderName = prompt('Enter folder name:');
 		if (folderName && !folders[folderName]) {
@@ -335,6 +481,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Initial rendering
 	renderFolders();
+
+	
 });
 
 
@@ -619,44 +767,60 @@ document.addEventListener('DOMContentLoaded', () => {
 // Kanban Board Initialization
 document.addEventListener('DOMContentLoaded', () => {
 	const kanbanColumns = document.querySelectorAll('.kanban-column');
-	const assigneeSelect = document.getElementById('assignee-select');
-	let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+	let versions = JSON.parse(localStorage.getItem('versions')) || {};
 
-	// Check if kanban columns exist before initializing
-	if (kanbanColumns.length === 0) {
-		console.warn('No Kanban columns found on the page.');
-		return;
-	}
-	const populateAssigneeDropdown = () => {
-		assigneeSelect.innerHTML = '<option value="">Select Assignee</option>';
-		Object.keys(folderBank).forEach(folderName => {
-			const option = document.createElement('option');
-			option.value = folderName;
-			option.textContent = folderName;
-			assigneeSelect.appendChild(option);
-		});
-	};
-
-	// Initialize the Kanban board
-	renderTasks();
-
-	// Drag-and-drop event listeners for columns
-	kanbanColumns.forEach(column => {
-		column.addEventListener('dragover', handleDragOver);
-		column.addEventListener('dragenter', handleDragEnter);
-		column.addEventListener('dragleave', handleDragLeave);
-		column.addEventListener('drop', handleDrop);
+	// Ensure versions have a saved status (default to "to-do" if not set)
+	Object.keys(versions).forEach(id => {
+		if (!versions[id].status) versions[id].status = 'to-do';
 	});
 
-	// Task form handling
-	const taskForm = document.getElementById('task-form');
-	if (taskForm) {
-		taskForm.addEventListener('submit', handleTaskFormSubmit);
-	} else {
-		console.warn('Task form not found on the page.');
+	// Save updated versions back to localStorage
+	localStorage.setItem('versions', JSON.stringify(versions));
+
+	// Function to create a task card from version data
+	function createVersionCard(version) {
+		if (!version || !version.id) return null;
+
+		const card = document.createElement('div');
+		card.id = `version-${version.id}`;
+		card.className = 'kanban-card';
+		card.draggable = true;
+		card.dataset.status = version.status;
+
+		card.innerHTML = `
+            <h3>Version: ${version.id}</h3>
+            <p><strong>Notes:</strong> ${version.notes}</p>
+            <p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
+            <p><strong>Uploaded:</strong> ${version.date}</p>
+            <p><strong>Status:</strong> ${card.dataset.status}</p>
+            <a href="${version.file}" target="_blank">📂 Download</a>
+        `;
+
+		// Enable drag events for Kanban functionality
+		card.addEventListener('dragstart', handleDragStart);
+		card.addEventListener('dragend', handleDragEnd);
+
+		return card;
 	}
 
-	// Event Handlers
+	// Function to render versions as Kanban tasks
+	function renderVersions() {
+		Object.values(versions).forEach(version => {
+			const column = document.querySelector(`.kanban-column[data-status="${version.status}"]`);
+			if (column) {
+				const kanbanCardsContainer = column.querySelector('.kanban-cards');
+				const versionCard = createVersionCard(version);
+				if (kanbanCardsContainer && versionCard) {
+					kanbanCardsContainer.appendChild(versionCard);
+				}
+			}
+		});
+
+		// Reattach drag-and-drop event listeners
+		updateTaskCounts();
+	}
+
+	// Drag-and-drop event handlers
 	function handleDragOver(e) {
 		e.preventDefault();
 	}
@@ -672,15 +836,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function handleDrop(e) {
 		e.preventDefault();
-		const taskId = e.dataTransfer.getData('text/plain');
-		const taskElement = document.getElementById(taskId);
-		if (taskElement && this.querySelector('.kanban-cards')) {
-			this.querySelector('.kanban-cards').appendChild(taskElement);
+		const versionId = e.dataTransfer.getData('text/plain');
+		const versionCard = document.getElementById(versionId);
+		if (versionCard && this.querySelector('.kanban-cards')) {
+			this.querySelector('.kanban-cards').appendChild(versionCard);
 			this.classList.remove('dragging-over');
 
-			// Update task status
+			// Update version status in localStorage
 			const newStatus = this.dataset.status;
-			updateTaskStatus(taskId, newStatus);
+			const versionKey = versionId.replace('version-', '');
+			if (versions[versionKey]) {
+				versions[versionKey].status = newStatus;
+				localStorage.setItem('versions', JSON.stringify(versions)); // Save updated status
+				updateTaskCounts();
+			}
 		}
 	}
 
@@ -695,85 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		this.style.display = 'block';
 	}
 
-	function handleTaskFormSubmit(e) {
-		e.preventDefault();
-
-		// Get task data from form inputs
-		const taskTitle = document.getElementById('task-title')?.value.trim();
-		const taskDetails = document.getElementById('task-details')?.value.trim();
-		const taskPriority = document.getElementById('task-priority')?.value;
-		const taskAssignee = document.getElementById('task-assignee')?.value;
-		const taskFile = document.getElementById('task-file')?.files[0];
-
-		if (!taskTitle || !taskDetails) {
-			alert('Please fill out all fields.');
-			return;
-		}
-
-		// Create a new task object
-		const newTask = {
-			id: `task-${Date.now()}`,
-			name: taskTitle,
-			description: taskDetails,
-			priority: taskPriority,
-			assignee: taskAssignee,
-			file: taskFile ? taskFile.name : 'No file attached',
-			status: 'to-do'
-		};
-
-		// Add task to localStorage and update the UI
-		tasks.push(newTask);
-		localStorage.setItem('tasks', JSON.stringify(tasks));
-
-		const taskCard = createTaskCard(newTask);
-		const todoColumn = document.getElementById('todo-column');
-		if (todoColumn && taskCard) {
-			todoColumn.appendChild(taskCard);
-		} else {
-			console.warn('To-Do column not found.');
-		}
-
-		// Reset form and update task counts
-		if (taskForm) {
-			taskForm.reset();
-		}
-		updateTaskCounts();
-	}
-
-	// Helper Functions
-	function createTaskCard(task) {
-		if (!task || !task.id) return null; // Ensure task object is valid
-
-		const card = document.createElement('div');
-		card.id = task.id;
-		card.className = 'kanban-card';
-		card.draggable = true;
-		card.innerHTML = `
-            <h3>${task.name}</h3>
-            <p>${task.description}</p>
-            <div class="task-metadata">
-                <p>Priority: ${task.priority}</p>
-                <p>Assignee: ${task.assignee}</p>
-                <p>File: <a href="#" onclick="alert('File download feature coming soon!')">${task.file}</a></p>
-            </div>
-        `;
-
-		// Add drag event listeners to the card
-		card.addEventListener('dragstart', handleDragStart);
-		card.addEventListener('dragend', handleDragEnd);
-
-		return card; // Ensure the function returns a valid Node
-	}
-
-	function updateTaskStatus(taskId, newStatus) {
-		const task = tasks.find(t => t.id === taskId);
-		if (task) {
-			task.status = newStatus;
-			localStorage.setItem('tasks', JSON.stringify(tasks));
-			updateTaskCounts();
-		}
-	}
-
+	// Function to update task counts
 	function updateTaskCounts() {
 		kanbanColumns.forEach(column => {
 			const count = column.querySelectorAll('.kanban-card').length;
@@ -784,41 +875,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	}
 
-	function renderTasks() {
-		tasks.forEach(task => {
-			const column = document.getElementById(`${task.status}-column`);
-			if (column) {
-				const taskCard = createTaskCard(task);
-				if (taskCard) {
-					const kanbanCardsContainer = column.querySelector('.kanban-cards');
-					if (kanbanCardsContainer) {
-						kanbanCardsContainer.appendChild(taskCard);
-					} else {
-						console.warn('Kanban cards container not found in column:', column);
-					}
-				}
-			}
-		});
+	// Initialize Kanban columns with event listeners
+	kanbanColumns.forEach(column => {
+		column.addEventListener('dragover', handleDragOver);
+		column.addEventListener('dragenter', handleDragEnter);
+		column.addEventListener('dragleave', handleDragLeave);
+		column.addEventListener('drop', handleDrop);
+	});
 
-		// After rendering, re-attach drag-and-drop event listeners
-		const kanbanCards = document.querySelectorAll('.kanban-card');
-		kanbanCards.forEach(card => {
-			card.addEventListener('dragstart', handleDragStart);
-			card.addEventListener('dragend', handleDragEnd);
-		});
-
-		updateTaskCounts();
-	}
-
-	// Add styles for drag-over effect
-	const styleElement = document.createElement('style');
-	styleElement.textContent = `
-        .kanban-column.dragging-over {
-            background-color: #f4f4f4;
-            transition: background-color 0.3s ease;
-        }
-    `;
-	document.head.appendChild(styleElement);
+	// Render versions as Kanban tasks on page load
+	renderVersions();
 });
 
 
@@ -966,9 +1032,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-
-
+// ===============================
+// help.html  search
+// ===============================
 
 document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById("search-help");
@@ -987,3 +1053,38 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+
+// ===============================
+// storage usage index.html  
+// ===============================
+
+function updateTotalStorage() {
+    console.log("Updating total storage usage...");
+    const folders = JSON.parse(localStorage.getItem('folders')) || {};
+    let totalSize = 0;
+
+    Object.values(folders).forEach(files => {
+        files.forEach(file => {
+            let fileSizeMB = parseFloat(file.size.replace(' MB', '')); // Convert to number
+            totalSize += fileSizeMB;
+        });
+    });
+
+    // Update the card display
+    const totalStorageElement = document.getElementById("gantt-chart");
+    if (totalStorageElement) {
+        totalStorageElement.innerHTML = `💾 ${totalSize.toFixed(2)} MB</strong>`;
+    } else {
+        console.warn("Element with ID 'gantt-chart' not found.");
+    }
+}
+
+// Ensure the function runs on page load
+document.addEventListener("DOMContentLoaded", () => {
+    updateTotalStorage();
+});
+
+// Update storage when files are added or removed
+document.addEventListener("fileUploadSuccess", updateTotalStorage);
+document.addEventListener("fileDeleteSuccess", updateTotalStorage);

@@ -75,26 +75,31 @@
                 
             </div>
         </section>
-
         <section class="gantt-chart-section">
-
             <div class="charts-wrapper">
-                <h4>version submitted </h4>
-                <div class="chart-container">
-                    <canvas id="version-chart"></canvas>
-                </div>
-                <h4>Team Contrubtion</h4>
-                <div class="chart-container">
-                    <canvas id="team-chart"></canvas>
-                </div>
-            </div>
-            <h4>Project Timeline</h4>
-            <div class="chart-container">
-                <canvas id="gantt-chart"></canvas>
-            </div>
+                <!-- Reports Section -->
+                <section class="report-section">
+                    <h2>Download Reports</h2>
+                    <button id="download-storage-report">💾 Storage Usage Report</button>
+                    <button id="download-versions-report">📄 Version Uploaded Report</button>
+                    <button id="download-team-report">👥 Team Contribution Report</button>
+                    <button id="download-phonebook-report">📞 Phone Book Report</button>
+                </section>
+        
+                <!-- Team Contribution Chart -->
+                <section class="chart-container">
+                                    
+                        <h4>Team Contribution</h4>
+                        <canvas id="team-chart"></canvas>
+                </section>
+ 
+                  <!-- Resources Usage Chart -->
+                <section class="chart-container">
+                    <h4>Resources Usage</h4>
+                    <canvas id="gantt-chart"></canvas>
+                </section>
         </section>
 
-        
      <section class="dashboard-section">
 
         
