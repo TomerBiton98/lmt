@@ -54,26 +54,7 @@
           
             
             <!-- Kanban Board -->
-            <div class="kanban-board">
-                <div class="kanban-column" data-status="idea" style="background-color: #f4f6fa;">
-                    <h2>Idea <span class="task-count">(0)</span></h2>
-                    <div class="kanban-cards" id="idea-column"></div>
-                </div>
-                <div class="kanban-column" data-status="to-do" style="background-color: #fef8e4;">
-                    <h2>To Do <span class="task-count">(0)</span></h2>
-                    <div class="kanban-cards" id="todo-column"></div>
-        
-                </div>
-                <div class="kanban-column" data-status="in-progress" style="background-color: #eaf4fe;">
-                    <h2>In Progress <span class="task-count">(0)</span></h2>
-                    <div class="kanban-cards" id="in-progress-column"></div>
-                </div>
-                <div class="kanban-column" data-status="done" style="background-color: #e9f7e9;">
-                    <h2>Done <span class="task-count">(0)</span></h2>
-                    <div class="kanban-cards" id="done-column"></div>
-                </div>
-                
-            </div>
+
         </section>
         <section class="gantt-chart-section">
             <div class="charts-wrapper">
@@ -101,7 +82,25 @@
         </section>
 
      <section class="dashboard-section">
-
+        <div class="kanban-board">
+            <div class="kanban-column" data-status="Cancel ❌" style="background-color: #f4f6fa;">
+                <h2>Cancel ❌ <span class="task-count">(0)</span></h2>
+                <div class="kanban-cards" id="Cancel"></div>
+            </div>
+            <div class="kanban-column" data-status="New 🆕" style="background-color: #fef8e4;">
+                <h2>New 🆕 <span class="task-count">(0)</span></h2>
+                <div class="kanban-cards" id="New 🆕"></div>
+            </div>
+            <div class="kanban-column" data-status="To Review 🔁" style="background-color: #eaf4fe;">
+                <h2>To Review 🔁<span class="task-count">(0)</span></h2>
+                <div class="kanban-cards" id="To Review"></div>
+            </div>
+            <div class="kanban-column" data-status="Approved ✅" style="background-color: #e9f7e9;">
+                <h2>Approved ✅<span class="task-count">(0)</span></h2>
+                <div class="kanban-cards" id="Approved"></div>
+            </div>
+        </div>
+        
         
                 <!-- version control-->
     <div class="documents-section">

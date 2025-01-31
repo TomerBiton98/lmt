@@ -777,68 +777,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
 // ===============================
-// KANBAN BOARD (Review Process for Versions)
+// KANBAN BOARD 
 // ===============================
 document.addEventListener('DOMContentLoaded', () => {
     const kanbanColumns = document.querySelectorAll('.kanban-column');
     let versions = JSON.parse(localStorage.getItem('versions')) || {};
 
-    // Ensure all versions have a saved status, defaulting to "to-do" if missing
-    Object.keys(versions).forEach(id => {
-        if (!versions[id].status) versions[id].status = 'to-do';
-    });
 
-    // Save updated versions back to localStorage
-    localStorage.setItem('versions', JSON.stringify(versions));
-
-    // Function to create a version card
-    function createVersionCard(version) {
-        if (!version || !version.id) return null;
-
-        const card = document.createElement('div');
-        card.id = `version-${version.id}`;
-        card.className = 'kanban-card';
-        card.draggable = true;
-        card.dataset.status = version.status;
-
-        card.innerHTML = `
-            <h3>Version: ${version.id}</h3>
-            <p><strong>Notes:</strong> ${version.notes}</p>
-            <p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
-            <p><strong>Uploaded:</strong> ${version.date}</p>
-            <p><strong>Status:</strong> ${version.status}</p>
-            <a href="${version.file}" target="_blank">📂 Download</a>
-        `;
-
-        // Enable drag events for Kanban functionality
-        card.addEventListener('dragstart', handleDragStart);
-        card.addEventListener('dragend', handleDragEnd);
-
-        return card;
-    }
-
-    // Function to render versions in Kanban board
-    function renderVersions() {
-        // Clear all columns before re-rendering
-        kanbanColumns.forEach(column => column.querySelector('.kanban-cards').innerHTML = "");
-
-        // Populate Kanban board with saved versions
-        Object.values(versions).forEach(version => {
-            const column = document.querySelector(`.kanban-column[data-status="${version.status}"]`);
-            if (column) {
-                const kanbanCardsContainer = column.querySelector('.kanban-cards');
-                const versionCard = createVersionCard(version);
-                if (kanbanCardsContainer && versionCard) {
-                    kanbanCardsContainer.appendChild(versionCard);
-                }
-            }
-        });
-
-        // Update task counters
-        updateTaskCounts();
-    }
+	function createVersionCard(version) {
+		if (!version || !version.id) return null;
+	
+		version.status = version.status || "New";
+	
+		const card = document.createElement('div');
+		card.id = `version-${version.id}`;
+		card.className = 'kanban-card';
+		card.draggable = true;
+		card.dataset.status = version.status;
+	
+		card.innerHTML = `
+			<h3>Version: ${version.id}</h3>
+			<p><strong>Notes:</strong> ${version.notes}</p>
+			<p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
+			<p><strong>Status:</strong> <span class="status-text">${version.status}</span></p>
+			<a href="${version.file}" target="_blank">📂 Download</a>
+		`;
+	
+		// הפעלת אירועי גרירה
+		card.addEventListener('dragstart', handleDragStart);
+		card.addEventListener('dragend', handleDragEnd);
+	
+		return card;
+	}
+	
+	function renderVersions() {
+		console.log("🔄 Rendering versions...");
+	
+		// ניקוי כל העמודות
+		kanbanColumns.forEach(column => column.querySelector('.kanban-cards').innerHTML = "");
+	
+		Object.values(versions).forEach(version => {
+			// ודא שהסטטוס מוגדר נכון
+			if (!version.status || version.status === "New" || version.status === "to-do") {
+				version.status = "New 🆕";
+			}
+	
+			console.log(`📌 Checking version: ${version.id}, Status: '${version.status}'`);
+	
+			// מציאת העמודה המתאימה
+			const column = document.querySelector(`.kanban-column[data-status='${version.status}']`);
+			if (!column) {
+				console.warn(`⚠️ No matching column found for status: '${version.status}'`);
+				console.log(`🔍 Available statuses:`, [...document.querySelectorAll('.kanban-column')].map(col => col.dataset.status));
+				return;
+			}
+	
+			const kanbanCardsContainer = column.querySelector('.kanban-cards');
+			const versionCard = createVersionCard(version);
+	
+			if (!kanbanCardsContainer || !versionCard) {
+				console.warn(`⚠️ Issue creating card for version ${version.id}`);
+				return;
+			}
+	
+			console.log(`✅ Adding version ${version.id} to column "${version.status}"`);
+			kanbanCardsContainer.appendChild(versionCard);
+		});
+	
+		// שמירה
+		localStorage.setItem('versions', JSON.stringify(versions));
+	
+		// עדכון כמות המשימות
+		updateTaskCounts();
+	}
+	
 
     // Drag-and-drop event handlers
     function handleDragOver(e) {
@@ -854,26 +867,30 @@ document.addEventListener('DOMContentLoaded', () => {
         this.classList.remove('dragging-over');
     }
 
-    function handleDrop(e) {
-        e.preventDefault();
-        const versionId = e.dataTransfer.getData('text/plain'); // ID of dragged item
-        const versionCard = document.getElementById(versionId);
-
-        if (versionCard && this.querySelector('.kanban-cards')) {
-            const newStatus = this.dataset.status; // New column's status
-            const versionKey = versionId.replace('version-', '');
-
-            if (versions[versionKey]) {
-                versions[versionKey].status = newStatus; // Update status in memory
-                localStorage.setItem('versions', JSON.stringify(versions)); // Persist change
-            }
-
-            this.querySelector('.kanban-cards').appendChild(versionCard);
-            this.classList.remove('dragging-over');
-
-            updateTaskCounts(); // Update count dynamically
-        }
-    }
+	function handleDrop(e) {
+		e.preventDefault();
+		const versionId = e.dataTransfer.getData('text/plain');
+		const versionCard = document.getElementById(versionId);
+	
+		if (versionCard && this.querySelector('.kanban-cards')) {
+			const newStatus = this.dataset.status;
+			const versionKey = versionId.replace('version-', '');
+	
+			if (versions[versionKey]) {
+				versions[versionKey].status = newStatus; // עדכון סטטוס בזיכרון
+				localStorage.setItem('versions', JSON.stringify(versions)); // שמירה
+			}
+	
+			this.querySelector('.kanban-cards').appendChild(versionCard);
+			this.classList.remove('dragging-over');
+	
+			// עדכון הסטטוס בכרטיס עצמו
+			versionCard.querySelector('.status-text').textContent = newStatus;
+	
+			updateTaskCounts(); // עדכון כמות המשימות
+		}
+	}
+	
 
     function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', this.id);
@@ -884,6 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleDragEnd() {
         this.style.display = 'block';
+        localStorage.setItem('versions', JSON.stringify(versions)); // Persist status changes
     }
 
     // Function to update task counts dynamically
