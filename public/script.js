@@ -18,104 +18,121 @@ document.addEventListener('DOMContentLoaded', () => {
 // CHART VISUALIZATION dashboard.html
 // ===============================
 function initializeCharts() {
-	// Bar Chart for Document Versions
-	const versionCtx = document.getElementById('version-chart')?.getContext('2d');
-	if (versionCtx) {
-		new Chart(versionCtx, {
-			type: 'bar',
-			data: {
-				labels: ['January', 'February', 'March', 'April', 'May'],
-				datasets: [{
-					label: 'Document submission',
-					data: [5, 10, 15, 8, 12],
-					backgroundColor: 'rgba(75, 192, 192, 0.6)',
-					borderColor: 'rgba(75, 192, 192, 1)',
-					borderWidth: 1,
-				}]
-			},
-			options: {
-				responsive: true,
-				scales: {
-					y: {
-						beginAtZero: true
-					}
-				},
-			},
-		});
-	}
+    // Load document versions from localStorage
+    const versions = JSON.parse(localStorage.getItem('versions')) || {};
+    const folders = JSON.parse(localStorage.getItem('folders')) || {};
 
+    // Extract data for the bar chart (document submissions per month)
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthlySubmissions = Array(12).fill(0);
 
-	// Doughnut Chart for Team Contributions based on versions uploaded
-	const teamCtx = document.getElementById('team-chart')?.getContext('2d');
-	if (teamCtx) {
-		// Example dynamic data, replace with your actual data fetching logic
-		const versionData = [{
-				assignee: 'John Doe',
-				versions: 10
-			},
-			{
-				assignee: 'Jane Smith',
-				versions: 15
-			},
-			{
-				assignee: 'Mike Johnson',
-				versions: 5
-			},
-		];
+    Object.values(versions).forEach(version => {
+        const monthIndex = new Date(version.date).getMonth();
+        monthlySubmissions[monthIndex]++;
+    });
 
-		const assignees = versionData.map(item => item.assignee);
-		const contributions = versionData.map(item => item.versions);
+    // Bar Chart for Document Versions
+    const versionCtx = document.getElementById('version-chart')?.getContext('2d');
+    if (versionCtx) {
+        new Chart(versionCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Document Submission',
+                    data: monthlySubmissions,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+            },
+        });
+    }
 
-		new Chart(teamCtx, {
-			type: 'doughnut',
-			data: {
-				labels: assignees,
-				datasets: [{
-					label: 'Team Contributions',
-					data: contributions,
-					backgroundColor: [
-						'rgba(255, 99, 132, 0.6)',
-						'rgba(54, 162, 235, 0.6)',
-						'rgba(255, 206, 86, 0.6)',
-					],
-				}]
-			},
-			options: {
-				responsive: true,
-				plugins: {
-					legend: {
-						position: 'top',
-					},
-				},
-			},
-		});
-	}
+    // Doughnut Chart for Team Contributions (by number of versions uploaded)
+    const teamCtx = document.getElementById('team-chart')?.getContext('2d');
+    if (teamCtx) {
+        const teamContributions = {};
 
-	// Gantt Chart for Project Timeline
-	const ganttCtx = document.getElementById('gantt-chart')?.getContext('2d');
-	if (ganttCtx) {
-		new Chart(ganttCtx, {
-			type: 'line',
-			data: {
-				labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-				datasets: [{
-					label: 'Project Progress',
-					data: [20, 50, 70, 90],
-					borderColor: '#36a2eb',
-					fill: false,
-				}]
-			},
-			options: {
-				responsive: true,
-				scales: {
-					y: {
-						beginAtZero: true
-					}
-				},
-			},
-		});
-	}
+        Object.values(versions).forEach(version => {
+            if (!teamContributions[version.assignee]) {
+                teamContributions[version.assignee] = 0;
+            }
+            teamContributions[version.assignee]++;
+        });
+
+        new Chart(teamCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(teamContributions),
+                datasets: [{
+                    label: 'Team Contributions',
+                    data: Object.values(teamContributions),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                    ],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            },
+        });
+    }
+
+    // Gantt Chart for Project Timeline
+    const ganttCtx = document.getElementById('gantt-chart')?.getContext('2d');
+    if (ganttCtx) {
+        // Simulated project progress based on number of versions uploaded
+        const totalVersions = Object.keys(versions).length;
+        const progressData = [
+            Math.min(totalVersions * 2, 20),
+            Math.min(totalVersions * 3, 50),
+            Math.min(totalVersions * 5, 80),
+            Math.min(totalVersions * 8, 100)
+        ];
+
+        new Chart(ganttCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [{
+                    label: 'Project Progress',
+                    data: progressData,
+                    borderColor: '#36a2eb',
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+            },
+        });
+    }
 }
+
+// Ensure the function runs on page load
+document.addEventListener("DOMContentLoaded", initializeCharts);
 
 // ===============================
 // UI COMPONENTS
@@ -949,75 +966,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-// ===============================
-// HELP PAGE - INTERACTIVE FEATURES
-// ===============================
+
+
+
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize Features
-    setupFAQToggle();
-    setupSearchFunctionality();
-    setupFormSubmission();
-});
-
-// ===============================
-// 1️⃣ SEARCH FUNCTIONALITY (REAL-TIME FILTER)
-// ===============================
-
-function setupSearchFunctionality() {
     const searchInput = document.getElementById("search-help");
     const faqItems = document.querySelectorAll(".faq");
 
-    if (searchInput) {
-        searchInput.addEventListener("keyup", function() {
-            let filter = searchInput.value.toLowerCase();
-            
-            faqItems.forEach(item => {
-                let question = item.querySelector(".faq-question").textContent.toLowerCase();
-                item.style.display = question.includes(filter) ? "block" : "none";
-            });
-        });
-    }
-}
-
-// ===============================
-// 2️⃣ FAQ SECTION - EXPANDABLE QUESTIONS
-// ===============================
-
-function setupFAQToggle() {
-    const faqItems = document.querySelectorAll(".faq");
-
-    faqItems.forEach(item => {
-        item.addEventListener("click", function() {
-            let answer = this.querySelector(".faq-answer");
-            let question = this.querySelector(".faq-question");
-
-            if (answer.style.display === "block") {
-                answer.style.display = "none";
-                question.innerHTML = question.innerHTML.replace("➖", "➕");
+    searchInput.addEventListener("keyup", function() {
+        let filter = searchInput.value.toLowerCase();
+        
+        faqItems.forEach(item => {
+            let question = item.querySelector(".faq-question").textContent.toLowerCase();
+            if (question.includes(filter)) {
+                item.style.display = "block";
             } else {
-                answer.style.display = "block";
-                question.innerHTML = question.innerHTML.replace("➕", "➖");
+                item.style.display = "none";
             }
         });
     });
-}
-
-// ===============================
-// 3️⃣ HELP FORM - SUBMIT REQUEST
-// ===============================
-
-function setupFormSubmission() {
-    const helpForm = document.getElementById("help-form");
-
-    if (helpForm) {
-        helpForm.addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            alert("Your help request has been submitted! Our support team will contact you soon.");
-            
-            // Clear form fields after submission
-            helpForm.reset();
-        });
-    }
-}
+});
