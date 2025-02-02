@@ -207,7 +207,7 @@
   width: 32%
  }
  .stat-card-bigger {
-  height: 60vh
+  height: 60vh 
  }
  .stat-card h2 {
   font-size: 1.2rem;
@@ -677,6 +677,7 @@
   .stat-card-bigger {
   height: auto
   }
+  
   .version-overview {
   list-style: none;
   padding: 0;
@@ -708,11 +709,14 @@
   .custom-upload-label:hover {
   background-color: rgba(0, 0, 0, 0.529)
   }
+
+
+  
  
  /*==================================
   10. File Management
  ==================================*/
- /* ======================================== Folder and File Styling ======================================== */
+
  .folder-container {
   list-style: none;
   padding: 0;
@@ -749,10 +753,29 @@
   border-radius: 4px
  }
  
- .folder-item, .file-item {
+ .folder-item{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px;
+  border-radius: 30px;
+  margin-bottom: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+  transition: background-color 0.3s ease, transform 0.2s ease
+ }
+ .delete-btn,.preview-btn,.share-btn{
+  display: flex;
+  border-radius: 50px;
+  height: 20px;
+  align-items: center;
+  
+  justify-content: space-around;
+ }
+ 
+ .file-item{
+  display: block;
+  justify-content: space-between;
+  text-align: left;
   padding: 10px;
   border-radius: 30px;
   margin-bottom: 10px;
@@ -1447,6 +1470,9 @@ button:hover {
   flex-direction: column;
   padding: 10px
   }
+  .stat-card{
+    display: block;
+    }
   }
   @media (max-width: 1000px) {
   .kanban-board {
@@ -1459,6 +1485,46 @@ button:hover {
   width: 100%;
   box-sizing: border-box
   }
+  .file-bank-section{
+    max-width: fit-content;
+    width: 50px;
+  }
+
+  .search-filter,.file-list{
+    align-items: center;
+    display: block;
+  }
+  .file-name {
+    display: block; 
+    width: 100%; 
+    word-wrap: break-word; 
+    overflow-wrap: break-word; 
+    white-space: normal; 
+}
+.preview-btn, .delete-btn, .share-btn {
+  width: 80%; /* Makes the buttons take full width of the container */
+  margin-bottom: 8px; /* Adds spacing between buttons */
+  padding: 10px;
+  text-align: left;
+  display: flex;
+}  .folder-name {
+  font-size: 1rem
+  }
+  .folder-item {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px
+  }
+  .folder-actions, .file-actions {
+  justify-content: flex-start
+  }
+  .file-bank-section{
+    max-width: fit-content;
+    width: 50px;
+  }
+.stat-card{
+display: block;
+}
   }
   @media (max-width: 768px) {
   body {
@@ -1507,6 +1573,29 @@ button:hover {
   .folder-actions, .file-actions {
   justify-content: flex-start
   }
+  .file-bank-section{
+    max-width: fit-content;
+    width: 50px;
+  }
+
+  .search-filter,.file-list{
+    align-items: center;
+    display: block;
+  }
+  .file-name {
+    display: block; 
+    width: 100%; 
+    word-wrap: break-word; 
+    overflow-wrap: break-word; 
+    white-space: normal; 
+}
+.preview-btn, .delete-btn, .share-btn {
+  width: 80%; /* Makes the buttons take full width of the container */
+  margin-bottom: 8px; /* Adds spacing between buttons */
+  padding: 10px;
+  text-align: left;
+  display: flex;
+}
   }
 
   @media (max-width: 768px) {
@@ -1551,6 +1640,60 @@ button:hover {
       height: auto !important;
     }
   }
+    @media (max-width: 650px) {
+    .file-bank-section{
+      max-width: fit-content;
+      width: 50px;
+    }
+
+    .search-filter,.file-list{
+      align-items: center;
+      display: block;
+    }
+    .file-name {
+      display: block; 
+      width: 100%; 
+      word-wrap: break-word; 
+      overflow-wrap: break-word; 
+      white-space: normal; 
+  }
+  .preview-btn, .delete-btn, .share-btn {
+    width: 80%; /* Makes the buttons take full width of the container */
+    margin-bottom: 8px; /* Adds spacing between buttons */
+    padding: 10px;
+    text-align: left;
+    display: flex;
+}
+  }
+
+  @media (max-width: 880px) {
+    .file-bank-section{
+      max-width: fit-content;
+      width: 50px;
+    }
+
+    .search-filter,.file-list{
+      align-items: center;
+      display: block;
+    }
+    .file-name {
+      display: block; 
+      width: 100%; 
+      word-wrap: break-word; 
+      overflow-wrap: break-word; 
+      white-space: normal; 
+  }
+  .preview-btn, .delete-btn, .share-btn {
+    width: 80%; /* Makes the buttons take full width of the container */
+    margin-bottom: 8px; /* Adds spacing between buttons */
+    padding: 10px;
+    text-align: left;
+    display: flex;
+}
+.stat-card{
+  display: block;
+  }
+  }
   
   @media (max-width: 480px) {
     .project-management h1 {
@@ -1565,7 +1708,37 @@ button:hover {
     .project-card h2 {
       font-size: 1.2rem;
     }
+
+
+    .file-bank-section{
+      max-width: fit-content;
+      width: 50px;
+    }
+
+    .search-filter,.file-list{
+      align-items: center;
+      display: block;
+    }
+    .file-name {
+      display: block; 
+      width: 100%; 
+      word-wrap: break-word; 
+      overflow-wrap: break-word; 
+      white-space: normal; 
   }
+  .preview-btn, .delete-btn, .share-btn {
+    width: 80%; /* Makes the buttons take full width of the container */
+    margin-bottom: 8px; /* Adds spacing between buttons */
+    padding: 10px;
+    text-align: left;
+    display: flex;
+}
+.stat-card{
+  display: block;
+  }
+  }
+
+
   
 /* ==================================
 22. DARK MODE STYLES

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
     <body>
         <div class="sidebar">
             <ul>
@@ -48,8 +47,9 @@
             </div>
         </ul>
         </div>
+
+
     <main class="content">
-        
     <main class="main">
         <section class="dashboard-section">
             <div class="stats-grid">
@@ -86,7 +86,7 @@
                 <option value="video">Videos</option>
             </select>
             <input type="file" id="file-upload" style="display: none;">
-            <label for="file-upload" class="btn">Upload File</label>
+            <label for="file-upload" class="btn">⬆ Upload File</label>
         </div>
         <ul id="file-list"></ul>
     </div>
@@ -96,10 +96,10 @@
 <div class="stat-card-bigger version-control">
     <h2>Version Control 📎</h2>
     <textarea id="version-notes" placeholder="Enter version notes..."></textarea>
-    <label for="version-file" class="custom-upload-label">Upload File</label>
+    <label for="version-file" class="custom-upload-label">⬆ Upload File</label>
     <input type="file" id="version-file" accept=".pdf,.docx,.xlsx,.png,.jpg">
     <select id="assignee-select">
-        <option value="">Select Assignee</option>
+        <option value="">Select Project</option>
     </select>
     <button id="submit-version-btn">Submit Version</button>
     <div id="version-control-list">
@@ -113,6 +113,7 @@
         </section>
     </main>
 
+    <script src="index.js"></script>
     <script src="login.js"></script>
     <script src="script.js"></script>
 </body>

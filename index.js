@@ -55,37 +55,35 @@ app.get('/', (req, res) => {
 // ROUTE: LOGIN ENDPOINT
 // ==============================
 app.post('/Login', (req, res) => {
+    console.log("Received Login Request:", req.body);
     const { username, password } = req.body;
 
-    // Query database to verify login credentials
+    if (!username || !password) {
+        return res.redirect('/login.html?error=missing');
+    }
+
     const sql = "SELECT id, Name, Username, Password FROM `data` WHERE `Username` = ?";
     dbConn.query(sql, [username], (err, result) => {
         if (err) {
             console.error("Database query error:", err);
-            return res.status(500).json({ message: "Database error" });
+            return res.redirect('/login.html?error=server');
         }
-
         if (result.length > 0) {
-            const storedPassword = result[0].Password;
-
-            // Match plaintext passwords
-            if (password === storedPassword) {
-                req.session.isLoggedIn = true; // Mark session as logged in
-                req.session.user = {
-                    id: result[0].id,
-                    username: result[0].Username,
-                    name: result[0].Name,
-                };
-                console.log("Session data after login:", req.session);
-                return res.redirect('/'); // Redirect to the homepage
+            if (password === result[0].Password) {
+                req.session.isLoggedIn = true;
+                req.session.user = { id: result[0].id, username: result[0].Username };
+                return res.redirect('/');
             } else {
-                return res.status(401).json({ success: false, message: "Invalid password" });
+                return res.redirect('/login.html?error=password');
             }
         } else {
-            return res.status(401).json({ success: false, message: "Invalid username" });
+            return res.redirect('/login.html?error=username');
         }
     });
 });
+
+
+
 
 // ==============================
 // ROUTE: FETCH LOGGED-IN USER DETAILS
@@ -104,3 +102,6 @@ app.get('/user', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+
+

@@ -1,11 +1,13 @@
 {
   "name": "knowledge-retention",
   "version": "1.0.0",
-  "description": "",
   "main": "Login.js",
   "scripts": {
+    "start": "node Login.js",
+    "dev": "nodemon Login.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  }
+  ,
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -18,5 +20,7 @@
     "mysql": "^2.18.1",
     "openai": "^4.76.0",
     "postcss-discard-duplicates": "^7.0.1"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

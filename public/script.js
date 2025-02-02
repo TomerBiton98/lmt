@@ -2,13 +2,9 @@
 // INITIALIZATION & CORE SETUP
 // ===============================
 document.addEventListener('DOMContentLoaded', () => {
-	console.log("Welcome to the Knowledge Retention Platform!");
 
 	// Section: Gantt Chart and Analytics
 	if (typeof initializeCharts === "function") initializeCharts();
-
-	// Section: Project Management
-	if (typeof handleProjectManagement === "function") handleProjectManagement();
 
 	// Sidebar hover effect
 	if (typeof handleSidebarHover === "function") handleSidebarHover();
@@ -19,13 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================
 // reports dashboard.html
 // ===============================
-// ===============================
-// Report Generation Functions
-// ===============================
-
 // 💾 Storage Usage Report
 function generateStorageReport() {
-    console.log("Generating Storage Report...");
     const folders = JSON.parse(localStorage.getItem('folders')) || {};
     let csvContent = "File Type,Number of Files,Total Size (MB)\n";
 
@@ -105,7 +96,6 @@ function generatePhonebookReport() {
 // Attach Event Listeners on Page Load
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Initializing Report Download Buttons...");
 
     const reportButtons = [
         { id: "download-storage-report", action: generateStorageReport },
@@ -487,6 +477,134 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ===============================
+// VERSION CONTROL SYSTEM index.html
+// ===============================
+document.addEventListener('DOMContentLoaded', () => {
+    const versions = JSON.parse(localStorage.getItem('versions')) || {};
+    const folderBank = JSON.parse(localStorage.getItem('folders')) || {}; // Load folder names from localStorage
+    const versionList = document.getElementById('version-control-list');
+    const submitVersionBtn = document.getElementById('submit-version-btn');
+    const versionNotes = document.getElementById('version-notes');
+    const versionFile = document.getElementById('version-file');
+    const assigneeSelect = document.getElementById('assignee-select');
+    const Versioncount = document.getElementById('Version-count');
+
+    // Populate assignee dropdown with folder names
+    const populateAssigneeDropdown = () => {
+        assigneeSelect.innerHTML = '<option value="">Select Project</option>';
+        Object.keys(folderBank).forEach(folderName => {
+            const option = document.createElement('option');
+            option.value = folderName;
+            option.textContent = folderName;
+            assigneeSelect.appendChild(option);
+        });
+    };
+
+    // Function to calculate the next version ID **individually for each project**
+    const getNextVersionId = (assignee) => {
+        if (!assignee) return "1.0"; // Default if no project is assigned
+
+        const versions = JSON.parse(localStorage.getItem('versions')) || {};
+        const projectVersions = Object.keys(versions)
+            .filter(key => key.startsWith(`${assignee}-v`)) // Filter versions for this project
+            .map(key => {
+                const match = key.match(/v([\d.]+)/); // Extract the numeric part of the version
+                return match ? parseFloat(match[1]) : 0; // Convert to number
+            })
+            .sort((a, b) => b - a); // Sort versions in descending order
+
+        const latestVersion = projectVersions.length > 0 ? projectVersions[0] : 0.9; // If no version, start from 1.0
+        const nextVersion = (latestVersion + 0.1).toFixed(1); // Increment by 0.1
+
+        return nextVersion;
+    };
+
+    // Function to update the "Versions count"
+    const updateVersioncount = () => {
+        const uniqueVersionsCount = Object.keys(versions).length;
+        Versioncount.textContent = uniqueVersionsCount;
+    };
+
+    // Function to render versions **sorted by date & time**
+    const renderVersions = () => {
+        versionList.innerHTML = '';
+
+        // Sort versions by date (newest first)
+        const sortedVersions = Object.entries(versions).sort(([idA, versionA], [idB, versionB]) => {
+            return new Date(versionB.date) - new Date(versionA.date); // Sort by date DESC
+        });
+
+        // Render each version
+        sortedVersions.forEach(([versionId, version]) => {
+            const versionItem = document.createElement('div');
+            versionItem.className = 'version-item';
+            versionItem.innerHTML = `
+            <p><strong>Project:</strong> ${version.assignee}</p>
+            <p><strong>Version:</strong> ${version.id}</p>
+            <p><strong>Notes:</strong> ${version.notes}</p>
+            <p><strong>Uploaded:</strong> ${new Date(version.date).toLocaleString()}</p>
+            <a id="Download-Version" href="${version.file}" target="_blank">Download File</a>
+            <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
+        `;
+            versionList.appendChild(versionItem);
+        });
+
+        // Update document count after rendering versions
+        updateVersioncount();
+    };
+
+    // Add version
+    submitVersionBtn.addEventListener('click', () => {
+        const file = versionFile.files[0];
+        const notes = versionNotes.value.trim();
+        const assignee = assigneeSelect.value;
+
+        if (!file || !notes || !assignee) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        const nextVersion = getNextVersionId(assignee);
+        const versionId = `${assignee}-v${nextVersion}`; // Format: ProjectName-v1.0
+
+        const newVersion = {
+            id: nextVersion,  // Use project-based version ID
+            notes,
+            assignee,
+            date: new Date().toISOString(), // Use ISO format for sorting
+            file: URL.createObjectURL(file),
+        };
+
+        const versions = JSON.parse(localStorage.getItem('versions')) || {};
+        versions[versionId] = newVersion;
+        localStorage.setItem('versions', JSON.stringify(versions));
+
+        renderVersions();
+        alert(`Version ${newVersion.id} added successfully to project ${assignee}.`);
+        versionNotes.value = '';
+        versionFile.value = '';
+        assigneeSelect.value = ''; // Reset the assignee dropdown
+    });
+
+    // Delete version
+    window.deleteVersion = (id) => {
+        if (confirm(`Are you sure you want to delete ${id}?`)) {
+            const versions = JSON.parse(localStorage.getItem('versions')) || {};
+            delete versions[id];
+            localStorage.setItem('versions', JSON.stringify(versions));
+            renderVersions();
+            alert(`${id} has been deleted.`);
+        }
+    };
+
+    populateAssigneeDropdown(); // Populate dropdown on load
+    renderVersions(); // Initial render of versions
+});
+
+
+
+
+// ===============================
 // dashboard.html "Document Versions Overview" section
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
@@ -611,123 +729,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Initial render of projects
 	renderProjects();
 });
-// ===============================
-// VERSION CONTROL SYSTEM index.html
-// ===============================
-document.addEventListener('DOMContentLoaded', () => {
-	const versions = JSON.parse(localStorage.getItem('versions')) || {};
-	const folderBank = JSON.parse(localStorage.getItem('folders')) || {}; // Load folder names from localStorage
-	const versionList = document.getElementById('version-control-list');
-	const submitVersionBtn = document.getElementById('submit-version-btn');
-	const versionNotes = document.getElementById('version-notes');
-	const versionFile = document.getElementById('version-file');
-	const assigneeSelect = document.getElementById('assignee-select');
-	const Versioncount = document.getElementById('Version-count');
-
-	// Populate assignee dropdown with folder names
-	const populateAssigneeDropdown = () => {
-		assigneeSelect.innerHTML = '<option value="">Select Assignee</option>';
-		Object.keys(folderBank).forEach(folderName => {
-			const option = document.createElement('option');
-			option.value = folderName;
-			option.textContent = folderName;
-			assigneeSelect.appendChild(option);
-		});
-	};
-
-	// Function to calculate the next version ID
-	const getNextVersionId = () => {
-		if (Object.keys(versions).length === 0) {
-			return '0.1'; // Start at 0.1 if no versions exist
-		}
-
-		// Find the highest version ID and increment by 0.1
-		const versionNumbers = Object.keys(versions).map((id) => parseFloat(id.split('-')[1]));
-		const nextVersion = Math.max(...versionNumbers) + 0.1;
-		return nextVersion.toFixed(1); // Ensure one decimal point
-	};
-
-	// Function to update the "Versions count" count
-	const updateVersioncount = () => {
-		const uniqueVersionsCount = Object.keys(versions).length;
-		Versioncount.textContent = uniqueVersionsCount;
-	};
-
-	// Function to render versions (latest version on top)
-	const renderVersions = () => {
-		versionList.innerHTML = '';
-
-		// Sort versions by ID in descending order (latest first)
-		const sortedVersions = Object.entries(versions).sort(([idA], [idB]) => {
-			return parseInt(idB.replace(/\D/g, '')) - parseInt(idA.replace(/\D/g, ''));
-		});
-
-		// Render each version
-		for (const [versionId, version] of sortedVersions) {
-			const versionItem = document.createElement('div');
-			versionItem.className = 'version-item';
-			versionItem.innerHTML = `
-            <p><strong>Version:</strong> ${version.id}</p>
-            <p><strong>Notes:</strong> ${version.notes}</p>
-            <p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
-            <p><strong>Uploaded:</strong> ${version.date}</p>
-            <a id="Download-Version" href="${version.file}" target="_blank">Download File</a>
-            <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
-        `;
-			versionList.appendChild(versionItem);
-		}
-
-		// Update document count after rendering versions
-		updateVersioncount();
-	};
-	// Add version
-	submitVersionBtn.addEventListener('click', () => {
-		const file = versionFile.files[0];
-		const notes = versionNotes.value.trim();
-		const assignee = assigneeSelect.value;
-
-		if (!file || !notes) {
-			alert('Please add both file and notes.');
-			return;
-		}
-
-		if (!assignee) {
-			alert('Please select an assignee.');
-			return;
-		}
-
-		const versionId = `version-${getNextVersionId()}`;
-		const newVersion = {
-			id: versionId.split('-')[1], // Extract the numerical version ID
-			notes,
-			assignee,
-			date: new Date().toLocaleString(),
-			file: URL.createObjectURL(file),
-		};
-
-		versions[versionId] = newVersion;
-		localStorage.setItem('versions', JSON.stringify(versions));
-		renderVersions();
-		alert('Version added successfully.');
-		versionNotes.value = '';
-		versionFile.value = '';
-		assigneeSelect.value = ''; // Reset the assignee dropdown
-	});
-
-
-	// Delete version
-	window.deleteVersion = (id) => {
-		if (confirm(`Are you sure you want to delete ${id}?`)) {
-			delete versions[id];
-			localStorage.setItem('versions', JSON.stringify(versions));
-			renderVersions();
-			alert(`${id} has been deleted.`);
-		}
-	};
-
-	populateAssigneeDropdown(); // Populate dropdown on load
-	renderVersions(); // Initial render of versions
-});
 
 // ===============================
 // VERSION CONTROL SYSTEM dashboard.html
@@ -742,7 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		versionOverview.innerHTML = `
             <p><strong>Version:</strong> ${version.id}</p>
             <p><strong>notes:</strong> ${version.notes}</p>
-            <p><strong>Assignee:</strong> ${version.assignee || 'Not Assigned'}</p>
+            <p><strong>Project:</strong> ${version.assignee || 'Not Assigned'}</p>
             <p><strong>Uploaded:</strong> ${version.date}</p>
             <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
         `;
@@ -1145,3 +1146,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // Update storage when files are added or removed
 document.addEventListener("fileUploadSuccess", updateTotalStorage);
 document.addEventListener("fileDeleteSuccess", updateTotalStorage);
+
+
+
+
+
+
+
+
+
+
+

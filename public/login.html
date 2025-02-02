@@ -22,8 +22,38 @@
             </form>            
         </section>
     </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const errorType = urlParams.get("error");
+    
+            if (errorType) {
+                let errorMessage = "";
+                switch (errorType) {
+                    case "missing":
+                        errorMessage = "⚠️ Please enter both username and password.";
+                        break;
+                    case "username":
+                        errorMessage = "❌ Username not found. Please check and try again.";
+                        break;
+                    case "password":
+                        errorMessage = "❌ Incorrect password. Please try again.";
+                        break;
+                    case "server":
+                        errorMessage = "🚨 Server error. Please try again later.";
+                        break;
+                    default:
+                        errorMessage = "Unknown error occurred.";
+                }
+    
+                alert(errorMessage);
+            }
+        });
+    </script>
+    
+    
     <script src="index.js"></script>
-    <script src="login.html"></script>
+    <script src="login.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

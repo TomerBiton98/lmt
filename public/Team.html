@@ -7,7 +7,141 @@
     <link rel="stylesheet" href="styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
+<style>
+        .widget {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem
+  }
+  .widget {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 1rem
+  }
+
+  .widget h3 {
+  margin: 0.5rem 0
+  }
+  .widget p {
+  margin: 0.5rem 0
+  }
+  .widget button {
+  margin: 0.5rem 0;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer
+  }
+
+
+   
+    .widget button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: rgb(16, 16, 16,0.8);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 30px;
+    }
+    .widget button:hover {
+    background-color: rgba(50, 50, 50, 0.9);
+    }
+    .comment-list {
+    margin-top: 10px;
+    padding-left: 20px;
+    }
+    .comment-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    position: relative;
+    }
+    .comment-item:after {
+    content: "";
+    clear: both;
+    display: block;
+    }
+    .comment-content {
+    margin-bottom: 10px;
+    }
+    .comment-content p {
+    margin: 5px 0;
+    }
+    .comment-media {
+    float: left;
+    margin-right: 10px;
+    width: 80px;
+    }
+    .comment-media img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    }
+    .comment-actions {
+    clear: both;
+    margin-top: 10px;
+    }
+    .comment-actions button {
+    margin-right: 10px;
+    }
+    .reply-container {
+    margin-left: 50px;
+    padding: 8px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    }
+    .reply-container p {
+    margin: 5px 0;
+    }
+    .new-discussion {
+        display: inline-block;
+    margin-right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    }
+    .new-discussion label {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    }
+    .new-discussion input[type="text"], .new-discussion button {
+    padding: 10px;
+    font-size: 20px;
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: rgb(16, 16, 16, 0.8);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border-radius: 15px;
+    color: white;
+    }
+    .new-discussion button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: rgb(16, 16, 16, 0.8);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border-radius: 30px;
+    color: white;
+
+    }
+    .new-discussion button:hover {
+    background-color: rgb(16, 16, 16, 0.8);
+    }
+    
+        </style>
     <div class="sidebar">
         <ul>
             <li>
@@ -76,6 +210,140 @@
         <div class="team-grid" id="team-grid"></div>
     </div>
 
+
+    <div class="container">
+        <section class="dashboard-section">
+        
+            <div class="new-discussion">
+                <label for="discussion-name">Discussion Name:</label>
+                <input type="text" id="discussion-name" placeholder="Enter discussion name">
+                <button onclick="addDiscussion()">Add Discussion</button>
+            </div>
+            <div id="discussion-list" class="discussion-list">
+
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+         function addDiscussion() {
+         var discussionName = document.getElementById('discussion-name').value;
+         if (discussionName.trim() === "") {
+             alert("Please enter a discussion name.");
+             return;
+         }
+
+         var discussionCount = document.getElementsByClassName('widget').length + 1;
+
+         var newDiscussion = document.createElement('div');
+         newDiscussion.className = 'widget';
+         newDiscussion.innerHTML = `
+                <h3>${discussionName}</h3>
+                <p>View and participate in recent community discussions.</p>
+                <button onclick="toggleContent('discussion${discussionCount}-content')">Show/Hide Details</button>
+                <button onclick="confirmRemoveDiscussion(this)">Remove Discussion</button>
+                <div id="discussion${discussionCount}-content" style="display:none;">
+                    <p>Discussion details for ${discussionName}...</p>
+                    <div id="comment-list-${discussionCount}" class="comment-list">
+                        <!-- Comments will be dynamically added here -->
+                    </div>
+                    <div class="comment-input">
+                        <textarea id="comment-${discussionCount}" placeholder="Add your comment..."></textarea>
+                        <input type="file" id="file-${discussionCount}" accept="image/*, video/*">
+                        <button onclick="addComment(${discussionCount})">Add Comment</button>
+                    </div>
+                </div>
+            `;
+
+        
+         var discussionList = document.getElementById('discussion-list');
+         discussionList.appendChild(newDiscussion);
+
+
+         document.getElementById('discussion-name').value = "";
+     }
+
+
+     function toggleContent(contentId) {
+         var content = document.getElementById(contentId);
+         if (content.style.display === "none") {
+             content.style.display = "block";
+         } else {
+             content.style.display = "none";
+         }
+     }
+
+
+     function confirmRemoveDiscussion(button) {
+         var confirmation = confirm("Are you sure you want to remove this discussion?");
+         if (confirmation) {
+             removeDiscussion(button);
+         }
+     }
+
+
+     function removeDiscussion(button) {
+         var discussionWidget = button.closest('.widget');
+         discussionWidget.remove();
+     }
+
+     function addComment(discussionNumber) {
+         var commentText = document.getElementById(`comment-${discussionNumber}`).value;
+         if (commentText.trim() === "") {
+             alert("Please enter a comment.");
+             return;
+         }
+
+         var fileInput = document.getElementById(`file-${discussionNumber}`);
+         var fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "";
+         var fileURL = fileInput.files.length > 0 ? URL.createObjectURL(fileInput.files[0]) : "";
+
+         var commentList = document.getElementById(`comment-list-${discussionNumber}`);
+         var newCommentItem = document.createElement('div');
+         newCommentItem.className = 'comment-item';
+         newCommentItem.innerHTML = `
+                <div class="comment-content">
+                    <strong>Your Username:</strong>
+                    <p>${commentText}</p>
+                    ${fileName ? `<a href="${fileURL}" download>${fileName}</a>` : ""}
+                </div>
+                ${fileInput.files.length > 0 ? `<div class="comment-media"><img src="${fileURL}" alt="Attached Media"></div>` : ""}
+                <div class="comment-actions">
+                    <button onclick="replyComment(${discussionNumber}, ${commentList.children.length})">Reply</button>
+                </div>
+            `;
+            
+            commentList.insertBefore(newCommentItem, commentList.firstChild);
+
+            document.getElementById(`comment-${discussionNumber}`).value = "";
+            fileInput.value = "";
+        }
+
+        function replyComment(discussionNumber, commentIndex) {
+            var replyText = prompt("Enter your reply:");
+            if (replyText === null || replyText.trim() === "") {
+                return; 
+            }
+
+            var commentList = document.getElementById(`comment-list-${discussionNumber}`);
+            var commentItem = commentList.children[commentList.children.length - 1 - commentIndex]; 
+            var replyContainer = document.createElement('div');
+            replyContainer.className = 'reply-container';
+            replyContainer.innerHTML = `
+                <p><strong>Your Username:</strong> ${replyText}</p>
+            `;
+
+            commentItem.appendChild(replyContainer);
+        }
+    </script>
+
+
+
+
+
+
+    
     <script>
     src="index.js"
     src="login.html"
