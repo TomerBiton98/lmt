@@ -2,9 +2,11 @@
 // INITIALIZATION & CORE SETUP
 // ===============================
 document.addEventListener('DOMContentLoaded', () => {
+	console.log("Welcome to the Knowledge Retention Platform!");
 
 	// Section: Gantt Chart and Analytics
 	if (typeof initializeCharts === "function") initializeCharts();
+
 
 	// Sidebar hover effect
 	if (typeof handleSidebarHover === "function") handleSidebarHover();
@@ -15,8 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================
 // reports dashboard.html
 // ===============================
+// ===============================
+// Report Generation Functions
+// ===============================
+
 // 💾 Storage Usage Report
 function generateStorageReport() {
+    console.log("Generating Storage Report...");
     const folders = JSON.parse(localStorage.getItem('folders')) || {};
     let csvContent = "File Type,Number of Files,Total Size (MB)\n";
 
@@ -96,6 +103,7 @@ function generatePhonebookReport() {
 // Attach Event Listeners on Page Load
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("Initializing Report Download Buttons...");
 
     const reportButtons = [
         { id: "download-storage-report", action: generateStorageReport },
@@ -259,7 +267,6 @@ if (fileChartCanvas) {
 }
 
 }
-
 // Ensure the function runs on page load
 document.addEventListener("DOMContentLoaded", initializeCharts);
 
@@ -475,135 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 });
 
-
-// ===============================
-// VERSION CONTROL SYSTEM index.html
-// ===============================
-document.addEventListener('DOMContentLoaded', () => {
-    const versions = JSON.parse(localStorage.getItem('versions')) || {};
-    const folderBank = JSON.parse(localStorage.getItem('folders')) || {}; // Load folder names from localStorage
-    const versionList = document.getElementById('version-control-list');
-    const submitVersionBtn = document.getElementById('submit-version-btn');
-    const versionNotes = document.getElementById('version-notes');
-    const versionFile = document.getElementById('version-file');
-    const assigneeSelect = document.getElementById('assignee-select');
-    const Versioncount = document.getElementById('Version-count');
-
-    // Populate assignee dropdown with folder names
-    const populateAssigneeDropdown = () => {
-        assigneeSelect.innerHTML = '<option value="">Select Project</option>';
-        Object.keys(folderBank).forEach(folderName => {
-            const option = document.createElement('option');
-            option.value = folderName;
-            option.textContent = folderName;
-            assigneeSelect.appendChild(option);
-        });
-    };
-
-    // Function to calculate the next version ID **individually for each project**
-    const getNextVersionId = (assignee) => {
-        if (!assignee) return "1.0"; // Default if no project is assigned
-
-        const versions = JSON.parse(localStorage.getItem('versions')) || {};
-        const projectVersions = Object.keys(versions)
-            .filter(key => key.startsWith(`${assignee}-v`)) // Filter versions for this project
-            .map(key => {
-                const match = key.match(/v([\d.]+)/); // Extract the numeric part of the version
-                return match ? parseFloat(match[1]) : 0; // Convert to number
-            })
-            .sort((a, b) => b - a); // Sort versions in descending order
-
-        const latestVersion = projectVersions.length > 0 ? projectVersions[0] : 0.9; // If no version, start from 1.0
-        const nextVersion = (latestVersion + 0.1).toFixed(1); // Increment by 0.1
-
-        return nextVersion;
-    };
-
-    // Function to update the "Versions count"
-    const updateVersioncount = () => {
-        const uniqueVersionsCount = Object.keys(versions).length;
-        Versioncount.textContent = uniqueVersionsCount;
-    };
-
-    // Function to render versions **sorted by date & time**
-    const renderVersions = () => {
-        versionList.innerHTML = '';
-
-        // Sort versions by date (newest first)
-        const sortedVersions = Object.entries(versions).sort(([idA, versionA], [idB, versionB]) => {
-            return new Date(versionB.date) - new Date(versionA.date); // Sort by date DESC
-        });
-
-        // Render each version
-        sortedVersions.forEach(([versionId, version]) => {
-            const versionItem = document.createElement('div');
-            versionItem.className = 'version-item';
-            versionItem.innerHTML = `
-            <p><strong>Project:</strong> ${version.assignee}</p>
-            <p><strong>Version:</strong> ${version.id}</p>
-            <p><strong>Notes:</strong> ${version.notes}</p>
-            <p><strong>Uploaded:</strong> ${new Date(version.date).toLocaleString()}</p>
-            <a id="Download-Version" href="${version.file}" target="_blank">Download File</a>
-            <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
-        `;
-            versionList.appendChild(versionItem);
-        });
-
-        // Update document count after rendering versions
-        updateVersioncount();
-    };
-
-    // Add version
-    submitVersionBtn.addEventListener('click', () => {
-        const file = versionFile.files[0];
-        const notes = versionNotes.value.trim();
-        const assignee = assigneeSelect.value;
-
-        if (!file || !notes || !assignee) {
-            alert('Please fill out all fields.');
-            return;
-        }
-
-        const nextVersion = getNextVersionId(assignee);
-        const versionId = `${assignee}-v${nextVersion}`; // Format: ProjectName-v1.0
-
-        const newVersion = {
-            id: nextVersion,  // Use project-based version ID
-            notes,
-            assignee,
-            date: new Date().toISOString(), // Use ISO format for sorting
-            file: URL.createObjectURL(file),
-        };
-
-        const versions = JSON.parse(localStorage.getItem('versions')) || {};
-        versions[versionId] = newVersion;
-        localStorage.setItem('versions', JSON.stringify(versions));
-
-        renderVersions();
-        alert(`Version ${newVersion.id} added successfully to project ${assignee}.`);
-        versionNotes.value = '';
-        versionFile.value = '';
-        assigneeSelect.value = ''; // Reset the assignee dropdown
-    });
-
-    // Delete version
-    window.deleteVersion = (id) => {
-        if (confirm(`Are you sure you want to delete ${id}?`)) {
-            const versions = JSON.parse(localStorage.getItem('versions')) || {};
-            delete versions[id];
-            localStorage.setItem('versions', JSON.stringify(versions));
-            renderVersions();
-            alert(`${id} has been deleted.`);
-        }
-    };
-
-    populateAssigneeDropdown(); // Populate dropdown on load
-    renderVersions(); // Initial render of versions
-});
-
-
-
-
 // ===============================
 // dashboard.html "Document Versions Overview" section
 // ===============================
@@ -729,6 +607,130 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Initial render of projects
 	renderProjects();
 });
+// ===============================
+// VERSION CONTROL SYSTEM index.html
+// ===============================
+document.addEventListener('DOMContentLoaded', () => {
+    const versions = JSON.parse(localStorage.getItem('versions')) || {};
+    const folderBank = JSON.parse(localStorage.getItem('folders')) || {}; // Load folder names from localStorage
+    const versionList = document.getElementById('version-control-list');
+    const submitVersionBtn = document.getElementById('submit-version-btn');
+    const versionNotes = document.getElementById('version-notes');
+    const versionFile = document.getElementById('version-file');
+    const assigneeSelect = document.getElementById('assignee-select');
+    const Versioncount = document.getElementById('Version-count');
+
+    // Populate assignee dropdown with folder names
+    const populateAssigneeDropdown = () => {
+        assigneeSelect.innerHTML = '<option value="">Select Project</option>';
+        Object.keys(folderBank).forEach(folderName => {
+            const option = document.createElement('option');
+            option.value = folderName;
+            option.textContent = folderName;
+            assigneeSelect.appendChild(option);
+        });
+    };
+
+    // Function to calculate the next version ID **individually for each project**
+    const getNextVersionId = (assignee) => {
+        if (!assignee) return "1.0"; // Default if no project is assigned
+
+        const versions = JSON.parse(localStorage.getItem('versions')) || {};
+        const projectVersions = Object.keys(versions)
+            .filter(key => key.startsWith(`${assignee}-v`)) // Filter versions for this project
+            .map(key => {
+                const match = key.match(/v([\d.]+)/); // Extract the numeric part of the version
+                return match ? parseFloat(match[1]) : 0; // Convert to number
+            })
+            .sort((a, b) => b - a); // Sort versions in descending order
+
+        const latestVersion = projectVersions.length > 0 ? projectVersions[0] : 0.9; // If no version, start from 1.0
+        const nextVersion = (latestVersion + 0.1).toFixed(1); // Increment by 0.1
+
+        return nextVersion;
+    };
+
+    // Function to update the "Versions count"
+    const updateVersioncount = () => {
+        const uniqueVersionsCount = Object.keys(versions).length;
+        Versioncount.textContent = uniqueVersionsCount;
+    };
+
+    // Function to render versions **sorted by date & time**
+    const renderVersions = () => {
+        versionList.innerHTML = '';
+
+        // Sort versions by date (newest first)
+        const sortedVersions = Object.entries(versions).sort(([idA, versionA], [idB, versionB]) => {
+            return new Date(versionB.date) - new Date(versionA.date); // Sort by date DESC
+        });
+
+        // Render each version
+        sortedVersions.forEach(([versionId, version]) => {
+            const versionItem = document.createElement('div');
+            versionItem.className = 'version-item';
+            versionItem.innerHTML = `
+            <p><strong>Project:</strong> ${version.assignee}</p>
+            <p><strong>Version:</strong> ${version.id}</p>
+            <p><strong>Notes:</strong> ${version.notes}</p>
+            <p><strong>Uploaded:</strong> ${new Date(version.date).toLocaleString()}</p>
+            <a id="Download-Version" href="${version.file}" target="_blank">Download File</a>
+            <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
+        `;
+            versionList.appendChild(versionItem);
+        });
+
+        // Update document count after rendering versions
+        updateVersioncount();
+    };
+
+    // Add version
+    submitVersionBtn.addEventListener('click', () => {
+        const file = versionFile.files[0];
+        const notes = versionNotes.value.trim();
+        const assignee = assigneeSelect.value;
+
+        if (!file || !notes || !assignee) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        const nextVersion = getNextVersionId(assignee);
+        const versionId = `${assignee}-v${nextVersion}`; // Format: ProjectName-v1.0
+
+        const newVersion = {
+            id: nextVersion,  // Use project-based version ID
+            notes,
+            assignee,
+            date: new Date().toISOString(), // Use ISO format for sorting
+            file: URL.createObjectURL(file),
+        };
+
+        const versions = JSON.parse(localStorage.getItem('versions')) || {};
+        versions[versionId] = newVersion;
+        localStorage.setItem('versions', JSON.stringify(versions));
+
+        renderVersions();
+        alert(`Version ${newVersion.id} added successfully to project ${assignee}.`);
+        versionNotes.value = '';
+        versionFile.value = '';
+        assigneeSelect.value = ''; // Reset the assignee dropdown
+    });
+
+    // Delete version
+    window.deleteVersion = (id) => {
+        if (confirm(`Are you sure you want to delete ${id}?`)) {
+            const versions = JSON.parse(localStorage.getItem('versions')) || {};
+            delete versions[id];
+            localStorage.setItem('versions', JSON.stringify(versions));
+            renderVersions();
+            alert(`${id} has been deleted.`);
+        }
+    };
+
+    populateAssigneeDropdown(); // Populate dropdown on load
+    renderVersions(); // Initial render of versions
+});
 
 // ===============================
 // VERSION CONTROL SYSTEM dashboard.html
@@ -778,81 +780,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
 // ===============================
-// KANBAN BOARD 
+// KANBAN BOARD (Review Process for Versions)
 // ===============================
 document.addEventListener('DOMContentLoaded', () => {
     const kanbanColumns = document.querySelectorAll('.kanban-column');
     let versions = JSON.parse(localStorage.getItem('versions')) || {};
 
+    // Ensure all versions have a saved status, defaulting to "to-do" if missing
+    Object.keys(versions).forEach(id => {
+        if (!versions[id].status) versions[id].status = 'to-do';
+    });
 
-	function createVersionCard(version) {
-		if (!version || !version.id) return null;
-	
-		version.status = version.status || "New";
-	
-		const card = document.createElement('div');
-		card.id = `version-${version.id}`;
-		card.className = 'kanban-card';
-		card.draggable = true;
-		card.dataset.status = version.status;
-	
-		card.innerHTML = `
-			<h3>Version: ${version.id}</h3>
-			<p><strong>Notes:</strong> ${version.notes}</p>
-			<p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
-			<p><strong>Status:</strong> <span class="status-text">${version.status}</span></p>
-			<a href="${version.file}" target="_blank">📂 Download</a>
-		`;
-	
-		// הפעלת אירועי גרירה
-		card.addEventListener('dragstart', handleDragStart);
-		card.addEventListener('dragend', handleDragEnd);
-	
-		return card;
-	}
-	
-	function renderVersions() {
-		console.log("🔄 Rendering versions...");
-	
-		// ניקוי כל העמודות
-		kanbanColumns.forEach(column => column.querySelector('.kanban-cards').innerHTML = "");
-	
-		Object.values(versions).forEach(version => {
-			// ודא שהסטטוס מוגדר נכון
-			if (!version.status || version.status === "New" || version.status === "to-do") {
-				version.status = "New 🆕";
-			}
-	
-			console.log(`📌 Checking version: ${version.id}, Status: '${version.status}'`);
-	
-			// מציאת העמודה המתאימה
-			const column = document.querySelector(`.kanban-column[data-status='${version.status}']`);
-			if (!column) {
-				console.warn(`⚠️ No matching column found for status: '${version.status}'`);
-				console.log(`🔍 Available statuses:`, [...document.querySelectorAll('.kanban-column')].map(col => col.dataset.status));
-				return;
-			}
-	
-			const kanbanCardsContainer = column.querySelector('.kanban-cards');
-			const versionCard = createVersionCard(version);
-	
-			if (!kanbanCardsContainer || !versionCard) {
-				console.warn(`⚠️ Issue creating card for version ${version.id}`);
-				return;
-			}
-	
-			console.log(`✅ Adding version ${version.id} to column "${version.status}"`);
-			kanbanCardsContainer.appendChild(versionCard);
-		});
-	
-		// שמירה
-		localStorage.setItem('versions', JSON.stringify(versions));
-	
-		// עדכון כמות המשימות
-		updateTaskCounts();
-	}
-	
+    // Save updated versions back to localStorage
+    localStorage.setItem('versions', JSON.stringify(versions));
+
+    // Function to create a version card
+    function createVersionCard(version) {
+        if (!version || !version.id) return null;
+
+        const card = document.createElement('div');
+        card.id = `version-${version.id}`;
+        card.className = 'kanban-card';
+        card.draggable = true;
+        card.dataset.status = version.status;
+
+        card.innerHTML = `
+            <h3>Version: ${version.id}</h3>
+            <p><strong>Notes:</strong> ${version.notes}</p>
+            <p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
+            <p><strong>Uploaded:</strong> ${version.date}</p>
+            <p><strong>Status:</strong> ${version.status}</p>
+            <a href="${version.file}" target="_blank">📂 Download</a>
+        `;
+
+        // Enable drag events for Kanban functionality
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+
+        return card;
+    }
+
+    // Function to render versions in Kanban board
+    function renderVersions() {
+        // Clear all columns before re-rendering
+        kanbanColumns.forEach(column => column.querySelector('.kanban-cards').innerHTML = "");
+
+        // Populate Kanban board with saved versions
+        Object.values(versions).forEach(version => {
+            const column = document.querySelector(`.kanban-column[data-status="${version.status}"]`);
+            if (column) {
+                const kanbanCardsContainer = column.querySelector('.kanban-cards');
+                const versionCard = createVersionCard(version);
+                if (kanbanCardsContainer && versionCard) {
+                    kanbanCardsContainer.appendChild(versionCard);
+                }
+            }
+        });
+
+        // Update task counters
+        updateTaskCounts();
+    }
 
     // Drag-and-drop event handlers
     function handleDragOver(e) {
@@ -868,30 +858,26 @@ document.addEventListener('DOMContentLoaded', () => {
         this.classList.remove('dragging-over');
     }
 
-	function handleDrop(e) {
-		e.preventDefault();
-		const versionId = e.dataTransfer.getData('text/plain');
-		const versionCard = document.getElementById(versionId);
-	
-		if (versionCard && this.querySelector('.kanban-cards')) {
-			const newStatus = this.dataset.status;
-			const versionKey = versionId.replace('version-', '');
-	
-			if (versions[versionKey]) {
-				versions[versionKey].status = newStatus; // עדכון סטטוס בזיכרון
-				localStorage.setItem('versions', JSON.stringify(versions)); // שמירה
-			}
-	
-			this.querySelector('.kanban-cards').appendChild(versionCard);
-			this.classList.remove('dragging-over');
-	
-			// עדכון הסטטוס בכרטיס עצמו
-			versionCard.querySelector('.status-text').textContent = newStatus;
-	
-			updateTaskCounts(); // עדכון כמות המשימות
-		}
-	}
-	
+    function handleDrop(e) {
+        e.preventDefault();
+        const versionId = e.dataTransfer.getData('text/plain'); // ID of dragged item
+        const versionCard = document.getElementById(versionId);
+
+        if (versionCard && this.querySelector('.kanban-cards')) {
+            const newStatus = this.dataset.status; // New column's status
+            const versionKey = versionId.replace('version-', '');
+
+            if (versions[versionKey]) {
+                versions[versionKey].status = newStatus; // Update status in memory
+                localStorage.setItem('versions', JSON.stringify(versions)); // Persist change
+            }
+
+            this.querySelector('.kanban-cards').appendChild(versionCard);
+            this.classList.remove('dragging-over');
+
+            updateTaskCounts(); // Update count dynamically
+        }
+    }
 
     function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', this.id);
@@ -902,7 +888,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleDragEnd() {
         this.style.display = 'block';
-        localStorage.setItem('versions', JSON.stringify(versions)); // Persist status changes
     }
 
     // Function to update task counts dynamically
@@ -1116,44 +1101,52 @@ document.addEventListener("DOMContentLoaded", function() {
 // ===============================
 // storage usage index.html  
 // ===============================
-
 function updateTotalStorage() {
     console.log("Updating total storage usage...");
-    const folders = JSON.parse(localStorage.getItem('folders')) || {};
-    let totalSize = 0;
+    try {
+        const folders = JSON.parse(localStorage.getItem('folders')) || {};
+        let totalSize = 0;
 
-    Object.values(folders).forEach(files => {
-        files.forEach(file => {
-            let fileSizeMB = parseFloat(file.size.replace(' MB', '')); // Convert to number
-            totalSize += fileSizeMB;
+        Object.values(folders).forEach(files => {
+            if (Array.isArray(files)) {
+                files.forEach(file => {
+                    if (file && typeof file.size === 'string') {
+                        const sizeMatch = file.size.match(/[\d.]+/);
+                        if (sizeMatch) {
+                            const fileSizeMB = parseFloat(sizeMatch[0]);
+                            if (!isNaN(fileSizeMB)) {
+                                totalSize += fileSizeMB;
+                            }
+                        }
+                    }
+                });
+            }
         });
-    });
 
-    // Update the card display
-    const totalStorageElement = document.getElementById("gantt-chart");
-    if (totalStorageElement) {
-        totalStorageElement.innerHTML = `💾 ${totalSize.toFixed(2)} MB</strong>`;
-    } else {
-        console.warn("Element with ID 'gantt-chart' not found.");
+        // 🔹 Ensure we target the correct ID
+        const totalStorageElement = document.getElementById("gantt-chart"); 
+        if (totalStorageElement) {
+            totalStorageElement.innerHTML = `💾 ${totalSize.toFixed(2)} MB</strong>`;
+        } else {
+            console.warn("Element with ID 'gantt-chart' not found.");
+        }
+
+        return totalSize;
+    } catch (error) {
+        console.error('Error updating storage:', error);
+        return 0;
     }
 }
 
-// Ensure the function runs on page load
+
+// Event listeners for storage updates
 document.addEventListener("DOMContentLoaded", () => {
+    cleanupFolderStructure(); // Clean up on page load
     updateTotalStorage();
 });
-
-// Update storage when files are added or removed
 document.addEventListener("fileUploadSuccess", updateTotalStorage);
 document.addEventListener("fileDeleteSuccess", updateTotalStorage);
 
-
-
-
-
-
-
-
-
-
-
+document.addEventListener("DOMContentLoaded", () => {
+    updateTotalStorage(); // 🔹 Update storage usage when page loads
+});
