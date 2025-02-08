@@ -34,7 +34,7 @@
 :root {
   --primary-color: #fa8b8b;
   --secondary-color: #7c3aed;
-  --background-gradient: linear-gradient( 145deg, rgba(167, 139, 250, 0.3), rgba(255, 255, 255, 0.3) );
+  --background-gradient: linear-gradient( 145deg, #a78bfa4d, rgba(255, 255, 255, 0.3) );
   --blur-background: rgba(255, 255, 255, 0.15);
   --border-color: rgba(255, 255, 255, 0.3);
   --font-color: #4a4a4a;
@@ -574,7 +574,7 @@
   max-width: none
   }
   #version-notes {
-  background: rgb(255, 255, 255);
+  background: rgb(64, 64, 64);
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -867,7 +867,7 @@
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s
+  transition: background-color 0.3s;
  }
  
  .kanban-column h2 {
@@ -885,20 +885,18 @@
  
  .kanban-card {
   background-color: #fff;
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: grab;
-  display: flex;
+
   flex-direction: column;
   gap: 0.5rem;
   user-select: none;
   transition: transform 0.2s
  }
  
- .kanban-card:hover {
-  transform: scale(1.05)
- }
+
  
  .kanban-card:active {
   cursor: grabbing;

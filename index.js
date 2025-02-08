@@ -1,3 +1,19 @@
+// ========================================
+// INDEX.JS - SERVER CONFIGURATION AND ROUTES
+// ========================================
+
+// ========================================
+// TABLE OF CONTENTS
+// ========================================
+// 1. Module Imports and Configuration
+// 2. Database Connection Setup
+// 3. Middleware Setup
+// 4. Routes Configuration
+//    4.1 Serve Homepage
+//    4.2 Login Endpoint
+//    4.3 Fetch Logged-In User Details
+// 5. Start the Server
+
 // ==============================
 // MODULE IMPORTS AND CONFIGURATION
 // ==============================
@@ -5,7 +21,6 @@ const express = require('express'); // Express framework for building web applic
 const path = require('path');       // Path module for file system paths
 const mysql = require('mysql');     // MySQL client for database connection
 const session = require("express-session"); // Session management middleware
-
 const app = express();              // Initialize Express application
 const PORT = 3000;                  // Define the port number
 
@@ -20,7 +35,10 @@ const dbConn = mysql.createConnection({
     database: 'myServer'      // Database name
 });
 
-// Optional: Consider adding error handling for the database connection
+// Establish database connection and handle errors
+// If the connection fails, log the error for debugging
+// If successful, log a confirmation message
+
 dbConn.connect((err) => {
     if (err) {
         console.error('Database connection failed:', err);
@@ -45,6 +63,10 @@ app.use(session({
 }));
 
 // ==============================
+// ROUTES CONFIGURATION
+// ==============================
+
+// ==============================
 // ROUTE: SERVE HOMEPAGE
 // ==============================
 app.get('/', (req, res) => {
@@ -58,10 +80,12 @@ app.post('/Login', (req, res) => {
     console.log("Received Login Request:", req.body);
     const { username, password } = req.body;
 
+    // Validate input
     if (!username || !password) {
         return res.redirect('/login.html?error=missing');
     }
 
+    // Query database for user authentication
     const sql = "SELECT id, Name, Username, Password FROM `data` WHERE `Username` = ?";
     dbConn.query(sql, [username], (err, result) => {
         if (err) {
@@ -69,7 +93,7 @@ app.post('/Login', (req, res) => {
             return res.redirect('/login.html?error=server');
         }
         if (result.length > 0) {
-            if (password === result[0].Password) {
+            if (password === result[0].Password) { // Plain-text password comparison (consider hashing for security)
                 req.session.isLoggedIn = true;
                 req.session.user = { id: result[0].id, username: result[0].Username };
                 return res.redirect('/');
@@ -81,9 +105,6 @@ app.post('/Login', (req, res) => {
         }
     });
 });
-
-
-
 
 // ==============================
 // ROUTE: FETCH LOGGED-IN USER DETAILS
@@ -102,6 +123,3 @@ app.get('/user', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-

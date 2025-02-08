@@ -168,8 +168,32 @@
         </section>
     </main>
 
-    <script src="index.js"></script>
-    <script src="login.js"></script>
+    <script>
+// ===============================
+// help.html  search
+// ===============================
+
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("search-help");
+    const faqItems = document.querySelectorAll(".faq");
+
+    searchInput.addEventListener("keyup", function() {
+        let filter = searchInput.value.toLowerCase();
+        
+        faqItems.forEach(item => {
+            let question = item.querySelector(".faq-question").textContent.toLowerCase();
+            if (question.includes(filter)) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
+});
+
+
+
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

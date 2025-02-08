@@ -12,131 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (typeof handleSidebarHover === "function") handleSidebarHover();
 });
 
-
-
-// ===============================
-// reports dashboard.html
-// ===============================
-// ===============================
-// Report Generation Functions
-// ===============================
-
-// 💾 Storage Usage Report
-function generateStorageReport() {
-    console.log("Generating Storage Report...");
-    const folders = JSON.parse(localStorage.getItem('folders')) || {};
-    let csvContent = "File Type,Number of Files,Total Size (MB)\n";
-
-    const fileTypeCount = {};
-    const fileTypeSize = {};
-
-    Object.values(folders).forEach(files => {
-        files.forEach(file => {
-            const fileType = file.type.toUpperCase();
-            const fileSizeMB = parseFloat(file.size.replace(' MB', ''));
-
-            if (!fileTypeCount[fileType]) {
-                fileTypeCount[fileType] = 0;
-                fileTypeSize[fileType] = 0;
-            }
-            fileTypeCount[fileType]++;
-            fileTypeSize[fileType] += fileSizeMB;
-        });
-    });
-
-    Object.keys(fileTypeCount).forEach(type => {
-        csvContent += `${type},${fileTypeCount[type]},${fileTypeSize[type].toFixed(2)}\n`;
-    });
-
-    downloadCSV(csvContent, "storage_usage_report.csv");
-}
-
-// 📄 Versions Uploaded Report
-function generateVersionsReport() {
-    console.log("Generating Versions Report...");
-    const versions = JSON.parse(localStorage.getItem('versions')) || {};
-    let csvContent = "Version ID,Notes,Assignee,Upload Date\n";
-
-    Object.values(versions).forEach(version => {
-        csvContent += `${version.id},"${version.notes}",${version.assignee},${version.date}\n`;
-    });
-
-    downloadCSV(csvContent, "versions_uploaded_report.csv");
-}
-
-// 👥 Team Contribution Report
-function generateTeamReport() {
-    console.log("Generating Team Report...");
-    const versions = JSON.parse(localStorage.getItem('versions')) || {};
-    let csvContent = "Team Member,Total Versions Uploaded\n";
-
-    const teamContributions = {};
-
-    Object.values(versions).forEach(version => {
-        if (!teamContributions[version.assignee]) {
-            teamContributions[version.assignee] = 0;
-        }
-        teamContributions[version.assignee]++;
-    });
-
-    Object.keys(teamContributions).forEach(member => {
-        csvContent += `${member},${teamContributions[member]}\n`;
-    });
-
-    downloadCSV(csvContent, "team_contribution_report.csv");
-}
-
-// 📞 Phone Book Report
-function generatePhonebookReport() {
-    console.log("Generating Phonebook Report...");
-    const teamMembers = JSON.parse(localStorage.getItem("teamMembers")) || [];
-    let csvContent = "Name,Position,Phone Number\n";
-
-    teamMembers.forEach(member => {
-        csvContent += `"${member.name}","${member.position}","${member.phone}"\n`;
-    });
-
-    downloadCSV(csvContent, "team_phonebook_report.csv");
-}
-
-// ===============================
-// Attach Event Listeners on Page Load
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Initializing Report Download Buttons...");
-
-    const reportButtons = [
-        { id: "download-storage-report", action: generateStorageReport },
-        { id: "download-versions-report", action: generateVersionsReport },
-        { id: "download-team-report", action: generateTeamReport },
-        { id: "download-phonebook-report", action: generatePhonebookReport }
-    ];
-
-    reportButtons.forEach(button => {
-        const element = document.getElementById(button.id);
-        if (element) {
-            element.addEventListener("click", button.action);
-        } else {
-            console.warn(`Button with ID ${button.id} not found.`);
-        }
-    });
-});
-
-// ===============================
-// CSV Download Utility Function
-// ===============================
-function downloadCSV(csvContent, filename) {
-    console.log(`Downloading ${filename}...`);
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-
 // ===============================
 // CHART VISUALIZATION dashboard.html
 // ===============================
@@ -269,7 +144,6 @@ if (fileChartCanvas) {
 }
 // Ensure the function runs on page load
 document.addEventListener("DOMContentLoaded", initializeCharts);
-
 // ===============================
 // UI COMPONENTS
 // ===============================
@@ -308,477 +182,6 @@ function handleSidebarHover() {
 		overlay.addEventListener('click', toggleMenu);
 	});
 }
-// ===============================
-// index.html folder section
-// ===============================
-document.addEventListener('DOMContentLoaded', () => {
-	let folders = JSON.parse(localStorage.getItem('folders')) || {};
-	const folderList = document.getElementById('folder-list');
-	const fileList = document.getElementById('file-list');
-	const createFolderBtn = document.getElementById('create-folder');
-	const backToFolders = document.getElementById('back-to-folders');
-	const fileUpload = document.getElementById('file-upload');
-	const fileSearch = document.getElementById('file-search');
-	const fileTypeFilter = document.getElementById('file-type-filter');
-	const folderCountElement = document.getElementById('folder-count');
-
-	// Function to update folder count
-	const updateFolderCount = () => {
-		const uniqueFoldersCount = Object.keys(folders).length;
-		folderCountElement.textContent = uniqueFoldersCount;
-	};
-
-	let currentFolder = null;
-
-	const saveToLocalStorage = () => {
-		localStorage.setItem('folders', JSON.stringify(folders));
-	};
-
-	const renderFolders = () => {
-		folderList.innerHTML = '';
-		Object.keys(folders).forEach((folderName) => {
-			const folderItem = document.createElement('li');
-			folderItem.classList.add('folder-item');
-			folderItem.innerHTML = `
-                <div class="folder-details">
-                    <img src="images/folder.svg" alt="Folder Icon" class="folder-icon">
-                    <span class="folder-name">${folderName}</span>
-                </div>
-                <div class="folder-actions">
-                    <button class="btn delete-folder-btn">Delete</button>
-                    <button class="btn share-folder-btn">Share</button>
-                </div>
-            `;
-			folderItem.querySelector('.delete-folder-btn').addEventListener('click', () => deleteFolder(folderName));
-			folderItem.querySelector('.share-folder-btn').addEventListener('click', () => shareFolder(folderName));
-			folderItem.querySelector('.folder-details').addEventListener('click', () => openFolder(folderName));
-			folderList.appendChild(folderItem);
-		});
-		// Update folder count every time folders are rendered
-		updateFolderCount();
-	};
-
-	const deleteFolder = (folderName) => {
-		if (confirm(`Are you sure you want to delete the folder: ${folderName}?`)) {
-			delete folders[folderName];
-			saveToLocalStorage();
-			renderFolders();
-		}
-	};
-
-	const shareFolder = (folderName) => {
-		const folderData = JSON.stringify(folders[folderName], null, 2);
-		const encodedData = encodeURIComponent(folderData);
-		const url = `https://wa.me/?text=Check out the folder: ${folderName}\nFiles:\n${folderData}`;
-		window.open(url, '_blank');
-	};
-
-	const openFolder = (folderName) => {
-		currentFolder = folderName;
-		document.getElementById('folder-view').style.display = 'none';
-		document.getElementById('file-view').style.display = 'block';
-		renderFiles(folders[folderName]);
-	};
-
-	const backToFolderView = () => {
-		currentFolder = null;
-		document.getElementById('folder-view').style.display = 'block';
-		document.getElementById('file-view').style.display = 'none';
-	};
-
-	const renderFiles = (files) => {
-		fileList.innerHTML = '';
-		if (!files || files.length === 0) {
-			fileList.innerHTML = '<li class="no-files">No files found.</li>';
-			return;
-		}
-		files.forEach((file, index) => {
-			const fileItem = document.createElement('li');
-			fileItem.classList.add('file-item');
-			fileItem.innerHTML = `
-                <div class="file-details">
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-type">${file.type.toUpperCase()}</span>
-                    <span class="file-size">${file.size}</span>
-                    <span class="file-date">${file.uploaded}</span>
-                </div>
-                <div class="file-actions">
-                    <button class="btn preview-btn">Preview</button>
-                    <button class="btn delete-btn">Delete</button>
-                    <button class="btn share-btn">Share</button>
-                </div>
-            `;
-
-			fileItem.querySelector('.preview-btn').addEventListener('click', () => previewFile(file));
-			fileItem.querySelector('.delete-btn').addEventListener('click', () => deleteFile(index));
-			fileItem.querySelector('.share-btn').addEventListener('click', () => shareFile(file));
-
-			fileList.appendChild(fileItem);
-		});
-	};
-
-	const previewFile = (file) => {
-		alert(`Previewing file: ${file.name}`);
-	};
-
-	const deleteFile = (index) => {
-		if (confirm('Are you sure you want to delete this file?')) {
-			folders[currentFolder].splice(index, 1);
-			saveToLocalStorage();
-			renderFiles(folders[currentFolder]);
-	
-			// Dispatch event to update storage display
-			document.dispatchEvent(new Event("fileDeleteSuccess"));
-		}
-	};
-	
-
-	const shareFile = (file) => {
-		const fileData = encodeURIComponent(JSON.stringify(file));
-		const url = `https://wa.me/?text=Check out this file: ${file.name}\nDetails:\n${fileData}`;
-		window.open(url, '_blank');
-	};
-
-	const uploadFile = (event) => {
-		const file = event.target.files[0];
-		if (file && currentFolder) {
-			const fileType = file.name.split('.').pop();
-			const newFile = {
-				name: file.name,
-				type: fileType,
-				size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`, // Convert bytes to MB
-				uploaded: new Date().toISOString().split('T')[0],
-			};
-			folders[currentFolder].push(newFile);
-			saveToLocalStorage();
-			renderFiles(folders[currentFolder]);
-	
-			// Dispatch event to update storage display
-			document.dispatchEvent(new Event("fileUploadSuccess"));
-		}
-	};
-	
-	const createFolder = () => {
-		const folderName = prompt('Enter folder name:');
-		if (folderName && !folders[folderName]) {
-			folders[folderName] = [];
-			saveToLocalStorage();
-			renderFolders();
-		} else {
-			alert('Folder already exists or invalid name.');
-		}
-		// Update folder count after creating a folder
-		updateFolderCount();
-	};
-
-	// Add event listeners
-	fileUpload.addEventListener('change', uploadFile);
-	createFolderBtn.addEventListener('click', createFolder);
-	backToFolders.addEventListener('click', backToFolderView);
-
-	// Initial rendering
-	renderFolders();
-
-	
-});
-
-// ===============================
-// dashboard.html "Document Versions Overview" section
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-	// Retrieve stored projects from localStorage or initialize as an empty array
-	const projects = JSON.parse(localStorage.getItem("projects")) || [];
-
-	// DOM elements
-	const addProjectButton = document.getElementById("add-project");
-	const projectList = document.getElementById("project-list");
-	const searchProject = document.getElementById("search-project");
-	const filterProjects = document.getElementById("filter-projects");
-
-	// Function to render projects dynamically
-	const renderProjects = () => {
-		projectList.innerHTML = ""; // Clear existing project list
-
-		// Filter projects based on search input and filter criteria
-		const filteredProjects = projects.filter((project) => {
-			const matchesSearch = project.name.toLowerCase().includes(searchProject.value.toLowerCase());
-			switch (filterProjects.value) {
-				case "completed":
-					return project.status === "completed" && matchesSearch;
-				case "ongoing":
-					return project.status === "ongoing" && matchesSearch;
-				case "overdue":
-					return project.status === "overdue" && matchesSearch;
-				default:
-					return matchesSearch;
-			}
-		});
-
-		// Create project cards dynamically
-		filteredProjects.forEach((project) => {
-			const projectCard = document.createElement("div");
-			projectCard.classList.add("project-card");
-			projectCard.innerHTML = `
-                <h2>${project.name}</h2>
-                <p>${project.description}</p>
-                <p>Deadline: ${project.deadline}</p>
-                <p>Status: <strong>${project.status}</strong></p>
-                <div class="project-actions">
-                    <button class="delete-btn" onclick="deleteProject('${project.id}')">Delete</button>
-                    <button class="mark-complete-btn" onclick="markProjectComplete('${project.id}')">Mark as Complete</button>
-                </div>
-            `;
-			projectList.appendChild(projectCard);
-		});
-
-		if (filteredProjects.length === 0) {
-			projectList.innerHTML = `<p class="no-projects">No projects found matching your criteria.</p>`;
-		}
-	};
-
-	// Function to add a new project
-	const addProject = () => {
-		const name = document.getElementById("project-name").value.trim();
-		const deadline = document.getElementById("project-deadline").value;
-		const description = document.getElementById("project-description").value.trim();
-
-		// Validate input fields
-		if (!name || !deadline || !description) {
-			alert("Please fill out all fields.");
-			return;
-		}
-
-		// Create a new project object
-		const newProject = {
-			id: Date.now().toString(), // Unique ID based on timestamp
-			name,
-			deadline,
-			description,
-			status: "ongoing", // Default status for new projects
-		};
-
-		// Add the new project to the projects array and save to localStorage
-		projects.push(newProject);
-		localStorage.setItem("projects", JSON.stringify(projects));
-
-		// Re-render projects and reset input fields
-		renderProjects();
-		clearFields();
-	};
-
-	// Function to clear input fields after adding a project
-	const clearFields = () => {
-		document.getElementById("project-name").value = "";
-		document.getElementById("project-deadline").value = "";
-		document.getElementById("project-description").value = "";
-	};
-
-	// Function to delete a project by ID
-	const deleteProject = (id) => {
-		const index = projects.findIndex((project) => project.id === id);
-		if (index > -1) {
-			if (confirm("Are you sure you want to delete this project?")) {
-				projects.splice(index, 1);
-				localStorage.setItem("projects", JSON.stringify(projects));
-				renderProjects();
-			}
-		}
-	};
-
-	// Function to mark a project as complete
-	const markProjectComplete = (id) => {
-		const project = projects.find((project) => project.id === id);
-		if (project) {
-			project.status = "completed";
-			localStorage.setItem("projects", JSON.stringify(projects));
-			renderProjects();
-		}
-	};
-
-	// Attach global functions for dynamically created buttons
-	window.deleteProject = deleteProject;
-	window.markProjectComplete = markProjectComplete;
-
-	// Event listeners for adding, searching, and filtering projects
-	if (addProjectButton) addProjectButton.addEventListener("click", addProject);
-	if (searchProject) searchProject.addEventListener("input", renderProjects);
-	if (filterProjects) filterProjects.addEventListener("change", renderProjects);
-
-	// Initial render of projects
-	renderProjects();
-});
-// ===============================
-// VERSION CONTROL SYSTEM index.html
-// ===============================
-document.addEventListener('DOMContentLoaded', () => {
-    const versions = JSON.parse(localStorage.getItem('versions')) || {};
-    const folderBank = JSON.parse(localStorage.getItem('folders')) || {}; // Load folder names from localStorage
-    const versionList = document.getElementById('version-control-list');
-    const submitVersionBtn = document.getElementById('submit-version-btn');
-    const versionNotes = document.getElementById('version-notes');
-    const versionFile = document.getElementById('version-file');
-    const assigneeSelect = document.getElementById('assignee-select');
-    const Versioncount = document.getElementById('Version-count');
-
-    // Populate assignee dropdown with folder names
-    const populateAssigneeDropdown = () => {
-        assigneeSelect.innerHTML = '<option value="">Select Project</option>';
-        Object.keys(folderBank).forEach(folderName => {
-            const option = document.createElement('option');
-            option.value = folderName;
-            option.textContent = folderName;
-            assigneeSelect.appendChild(option);
-        });
-    };
-
-    // Function to calculate the next version ID **individually for each project**
-    const getNextVersionId = (assignee) => {
-        if (!assignee) return "1.0"; // Default if no project is assigned
-
-        const versions = JSON.parse(localStorage.getItem('versions')) || {};
-        const projectVersions = Object.keys(versions)
-            .filter(key => key.startsWith(`${assignee}-v`)) // Filter versions for this project
-            .map(key => {
-                const match = key.match(/v([\d.]+)/); // Extract the numeric part of the version
-                return match ? parseFloat(match[1]) : 0; // Convert to number
-            })
-            .sort((a, b) => b - a); // Sort versions in descending order
-
-        const latestVersion = projectVersions.length > 0 ? projectVersions[0] : 0.9; // If no version, start from 1.0
-        const nextVersion = (latestVersion + 0.1).toFixed(1); // Increment by 0.1
-
-        return nextVersion;
-    };
-
-    // Function to update the "Versions count"
-    const updateVersioncount = () => {
-        const uniqueVersionsCount = Object.keys(versions).length;
-        Versioncount.textContent = uniqueVersionsCount;
-    };
-
-    // Function to render versions **sorted by date & time**
-    const renderVersions = () => {
-        versionList.innerHTML = '';
-
-        // Sort versions by date (newest first)
-        const sortedVersions = Object.entries(versions).sort(([idA, versionA], [idB, versionB]) => {
-            return new Date(versionB.date) - new Date(versionA.date); // Sort by date DESC
-        });
-
-        // Render each version
-        sortedVersions.forEach(([versionId, version]) => {
-            const versionItem = document.createElement('div');
-            versionItem.className = 'version-item';
-            versionItem.innerHTML = `
-            <p><strong>Project:</strong> ${version.assignee}</p>
-            <p><strong>Version:</strong> ${version.id}</p>
-            <p><strong>Notes:</strong> ${version.notes}</p>
-            <p><strong>Uploaded:</strong> ${new Date(version.date).toLocaleString()}</p>
-            <a id="Download-Version" href="${version.file}" target="_blank">Download File</a>
-            <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
-        `;
-            versionList.appendChild(versionItem);
-        });
-
-        // Update document count after rendering versions
-        updateVersioncount();
-    };
-
-    // Add version
-    submitVersionBtn.addEventListener('click', () => {
-        const file = versionFile.files[0];
-        const notes = versionNotes.value.trim();
-        const assignee = assigneeSelect.value;
-
-        if (!file || !notes || !assignee) {
-            alert('Please fill out all fields.');
-            return;
-        }
-
-        const nextVersion = getNextVersionId(assignee);
-        const versionId = `${assignee}-v${nextVersion}`; // Format: ProjectName-v1.0
-
-        const newVersion = {
-            id: nextVersion,  // Use project-based version ID
-            notes,
-            assignee,
-            date: new Date().toISOString(), // Use ISO format for sorting
-            file: URL.createObjectURL(file),
-        };
-
-        const versions = JSON.parse(localStorage.getItem('versions')) || {};
-        versions[versionId] = newVersion;
-        localStorage.setItem('versions', JSON.stringify(versions));
-
-        renderVersions();
-        alert(`Version ${newVersion.id} added successfully to project ${assignee}.`);
-        versionNotes.value = '';
-        versionFile.value = '';
-        assigneeSelect.value = ''; // Reset the assignee dropdown
-    });
-
-    // Delete version
-    window.deleteVersion = (id) => {
-        if (confirm(`Are you sure you want to delete ${id}?`)) {
-            const versions = JSON.parse(localStorage.getItem('versions')) || {};
-            delete versions[id];
-            localStorage.setItem('versions', JSON.stringify(versions));
-            renderVersions();
-            alert(`${id} has been deleted.`);
-        }
-    };
-
-    populateAssigneeDropdown(); // Populate dropdown on load
-    renderVersions(); // Initial render of versions
-});
-
-// ===============================
-// VERSION CONTROL SYSTEM dashboard.html
-// ===============================
-document.addEventListener('DOMContentLoaded', () => {
-	const versionsOverviewList = document.getElementById('versions-overview-list');
-	const versions = JSON.parse(localStorage.getItem('versions')) || {};
-
-	for (const [versionId, version] of Object.entries(versions)) {
-		const versionOverview = document.createElement('div');
-		versionOverview.className = 'overview-item';
-		versionOverview.innerHTML = `
-            <p><strong>Version:</strong> ${version.id}</p>
-            <p><strong>notes:</strong> ${version.notes}</p>
-            <p><strong>Project:</strong> ${version.assignee || 'Not Assigned'}</p>
-            <p><strong>Uploaded:</strong> ${version.date}</p>
-            <button id="Delete-Version" onclick="deleteVersion('${versionId}')">Delete</button>
-        `;
-		versionsOverviewList.appendChild(versionOverview);
-	}
-
-	// Delete version
-	window.deleteVersion = (id) => {
-		if (confirm(`Are you sure you want to delete ${id}?`)) {
-			delete versions[id];
-			localStorage.setItem('versions', JSON.stringify(versions));
-			renderVersions();
-			alert(`${id} has been deleted.`);
-		}
-	};
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -788,109 +191,141 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const kanbanColumns = document.querySelectorAll('.kanban-column');
     let versions = JSON.parse(localStorage.getItem('versions')) || {};
+    console.log("🔍 Initial load versions:", versions);
 
-    // Ensure all versions have a saved status, defaulting to "to-do" if missing
+    // Define valid statuses exactly as they appear in HTML
+    const VALID_STATUSES = {
+        'Cancel': 'Cancel',
+        'New': 'New',
+        'to-review': 'to-review',
+        'Approved': 'Approved'
+    };
+
+    // Ensure all versions have a saved status
     Object.keys(versions).forEach(id => {
-        if (!versions[id].status) versions[id].status = 'to-do';
+        if (!versions[id].status) {
+            versions[id].status = 'New';
+        }
+        // Normalize any existing status to match our valid statuses
+        versions[id].status = VALID_STATUSES[versions[id].status] || 'New';
     });
 
     // Save updated versions back to localStorage
     localStorage.setItem('versions', JSON.stringify(versions));
 
     // Function to create a version card
-    function createVersionCard(version) {
-        if (!version || !version.id) return null;
+    function createVersionCard(version, versionKey) {
+        console.log("🎴 Creating card for version:", version, "with key:", versionKey);
+        if (!version || !version.id) {
+            console.warn("⚠️ Invalid version data:", version);
+            return null;
+        }
 
         const card = document.createElement('div');
-        card.id = `version-${version.id}`;
+        card.id = `version-${versionKey}`;
         card.className = 'kanban-card';
         card.draggable = true;
-        card.dataset.status = version.status;
+        card.dataset.versionKey = versionKey;
+
+        // Add emoji based on status
+        const statusEmoji = {
+            'Cancel': '❌',
+            'New': '🆕',
+            'to-review': '🔁',
+            'Approved': '✅'
+        }[version.status] || '📋';
 
         card.innerHTML = `
             <h3>Version: ${version.id}</h3>
-            <p><strong>Notes:</strong> ${version.notes}</p>
-            <p><strong>Assignee:</strong> ${version.assignee || 'Unassigned'}</p>
-            <p><strong>Uploaded:</strong> ${version.date}</p>
-            <p><strong>Status:</strong> ${version.status}</p>
-            <a href="${version.file}" target="_blank">📂 Download</a>
+            <p><strong>Notes:</strong> ${version.notes || 'No notes'}</p>
+            <p><strong>Project:</strong> ${version.assignee || 'Unassigned'}</p>
+            <p class="status-indicator">Status: ${version.status} ${statusEmoji}</p>
+            <a href="${version.file || '#'}" target="_blank">📂 Download</a>
         `;
 
-        // Enable drag events for Kanban functionality
         card.addEventListener('dragstart', handleDragStart);
         card.addEventListener('dragend', handleDragEnd);
+
+        // Add delete button if in Cancel column
+        if (version.status === 'Cancel') {
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-btn');
+            deleteButton.addEventListener('click', () => deleteVersion(versionKey));
+            card.appendChild(deleteButton);
+        }
 
         return card;
     }
 
     // Function to render versions in Kanban board
     function renderVersions() {
-        // Clear all columns before re-rendering
-        kanbanColumns.forEach(column => column.querySelector('.kanban-cards').innerHTML = "");
-
-        // Populate Kanban board with saved versions
-        Object.values(versions).forEach(version => {
-            const column = document.querySelector(`.kanban-column[data-status="${version.status}"]`);
-            if (column) {
-                const kanbanCardsContainer = column.querySelector('.kanban-cards');
-                const versionCard = createVersionCard(version);
-                if (kanbanCardsContainer && versionCard) {
-                    kanbanCardsContainer.appendChild(versionCard);
-                }
+        console.log("🎯 Rendering versions:", versions);
+        
+        // Clear all columns
+        kanbanColumns.forEach(column => {
+            const cardsContainer = column.querySelector('.kanban-cards');
+            if (cardsContainer) {
+                cardsContainer.innerHTML = "";
             }
         });
 
-        // Update task counters
+        // Populate board with saved versions
+        Object.entries(versions).forEach(([versionKey, version]) => {
+            const column = document.querySelector(`.kanban-column[data-status="${version.status}"]`);
+            if (column) {
+                const kanbanCardsContainer = column.querySelector('.kanban-cards');
+                const versionCard = createVersionCard(version, versionKey);
+                if (kanbanCardsContainer && versionCard) {
+                    kanbanCardsContainer.appendChild(versionCard);
+                    console.log(`✅ Added card ${versionKey} to ${version.status} column`);
+                }
+            } else {
+                console.warn(`⚠️ No column found for status: ${version.status}`);
+            }
+        });
+
         updateTaskCounts();
-    }
-
-    // Drag-and-drop event handlers
-    function handleDragOver(e) {
-        e.preventDefault();
-    }
-
-    function handleDragEnter(e) {
-        e.preventDefault();
-        this.classList.add('dragging-over');
-    }
-
-    function handleDragLeave() {
-        this.classList.remove('dragging-over');
     }
 
     function handleDrop(e) {
         e.preventDefault();
-        const versionId = e.dataTransfer.getData('text/plain'); // ID of dragged item
-        const versionCard = document.getElementById(versionId);
+        const versionKey = e.dataTransfer.getData('text/plain').replace('version-', '');
+        const newStatus = this.dataset.status; // Use exact status from column
+        
+        console.log(`🔄 Moving card ${versionKey} to ${newStatus}`);
 
-        if (versionCard && this.querySelector('.kanban-cards')) {
-            const newStatus = this.dataset.status; // New column's status
-            const versionKey = versionId.replace('version-', '');
-
-            if (versions[versionKey]) {
-                versions[versionKey].status = newStatus; // Update status in memory
-                localStorage.setItem('versions', JSON.stringify(versions)); // Persist change
-            }
-
-            this.querySelector('.kanban-cards').appendChild(versionCard);
-            this.classList.remove('dragging-over');
-
-            updateTaskCounts(); // Update count dynamically
+        if (versions[versionKey]) {
+            versions[versionKey].status = newStatus;
+            localStorage.setItem('versions', JSON.stringify(versions));
+            console.log("💾 Updated versions in localStorage:", versions);
+            renderVersions();
+        } else {
+            console.warn(`⚠️ Version not found in storage:`, versionKey);
         }
     }
 
     function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', this.id);
-        setTimeout(() => {
-            this.style.display = 'none';
-        }, 0);
+        this.classList.add('dragging');
     }
 
-    function handleDragEnd() {
-        this.style.display = 'block';
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+        kanbanColumns.forEach(column => {
+            column.classList.remove('dragging-over');
+        });
     }
 
-    // Function to update task counts dynamically
+    function handleDragOver(e) {
+        e.preventDefault();
+        this.classList.add('dragging-over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('dragging-over');
+    }
+
     function updateTaskCounts() {
         kanbanColumns.forEach(column => {
             const count = column.querySelectorAll('.kanban-card').length;
@@ -901,33 +336,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function deleteVersion(versionKey) {
+        if (confirm(`Are you sure you want to delete this version?`)) {
+            console.log(`🗑️ Deleting version ${versionKey}`);
+            delete versions[versionKey];
+            localStorage.setItem('versions', JSON.stringify(versions));
+            renderVersions();
+        }
+    }
+
     // Initialize Kanban columns with event listeners
     kanbanColumns.forEach(column => {
         column.addEventListener('dragover', handleDragOver);
-        column.addEventListener('dragenter', handleDragEnter);
         column.addEventListener('dragleave', handleDragLeave);
         column.addEventListener('drop', handleDrop);
     });
 
-    // Render versions as Kanban tasks on page load
+    // Initial render
     renderVersions();
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1053,6 +480,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ===============================
 // setting.html  dark mode
 // ===============================
@@ -1075,78 +516,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-// ===============================
-// help.html  search
-// ===============================
 
-document.addEventListener("DOMContentLoaded", function() {
-    const searchInput = document.getElementById("search-help");
-    const faqItems = document.querySelectorAll(".faq");
-
-    searchInput.addEventListener("keyup", function() {
-        let filter = searchInput.value.toLowerCase();
-        
-        faqItems.forEach(item => {
-            let question = item.querySelector(".faq-question").textContent.toLowerCase();
-            if (question.includes(filter)) {
-                item.style.display = "block";
-            } else {
-                item.style.display = "none";
-            }
-        });
-    });
-});
-
-
-// ===============================
-// storage usage index.html  
-// ===============================
-function updateTotalStorage() {
-    console.log("Updating total storage usage...");
-    try {
-        const folders = JSON.parse(localStorage.getItem('folders')) || {};
-        let totalSize = 0;
-
-        Object.values(folders).forEach(files => {
-            if (Array.isArray(files)) {
-                files.forEach(file => {
-                    if (file && typeof file.size === 'string') {
-                        const sizeMatch = file.size.match(/[\d.]+/);
-                        if (sizeMatch) {
-                            const fileSizeMB = parseFloat(sizeMatch[0]);
-                            if (!isNaN(fileSizeMB)) {
-                                totalSize += fileSizeMB;
-                            }
-                        }
-                    }
-                });
-            }
-        });
-
-        // 🔹 Ensure we target the correct ID
-        const totalStorageElement = document.getElementById("gantt-chart"); 
-        if (totalStorageElement) {
-            totalStorageElement.innerHTML = `💾 ${totalSize.toFixed(2)} MB</strong>`;
-        } else {
-            console.warn("Element with ID 'gantt-chart' not found.");
-        }
-
-        return totalSize;
-    } catch (error) {
-        console.error('Error updating storage:', error);
-        return 0;
-    }
-}
-
-
-// Event listeners for storage updates
-document.addEventListener("DOMContentLoaded", () => {
-    cleanupFolderStructure(); // Clean up on page load
-    updateTotalStorage();
-});
-document.addEventListener("fileUploadSuccess", updateTotalStorage);
-document.addEventListener("fileDeleteSuccess", updateTotalStorage);
-
-document.addEventListener("DOMContentLoaded", () => {
-    updateTotalStorage(); // 🔹 Update storage usage when page loads
-});
